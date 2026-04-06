@@ -5,7 +5,7 @@
  * Stages:
  *   1. MIGRATE    → Apply pending database migrations
  *   2. FETCH      → Run all enabled fetchers (Audible, Hardcover, Royal Road)
- *   3. CORRECT    → Apply community corrections (manual overrides)
+ *   3. CORRECT    → Re-merge multi-source books + apply manual overrides
  *   4. CLASSIFY   → Run subgenre classification on all books
  *   5. DETECT     → Run AI narration detection
  *   6. SCORE      → Compute quality scores
@@ -20,6 +20,7 @@ import { AudibleFetcher } from "./fetchers/audible.js";
 import { HardcoverFetcher } from "./fetchers/hardcover.js";
 import { RoyalRoadScraper } from "./fetchers/royalroad.js";
 import { closeDb } from "./db.js";
+import { getMultiSourceBookIds, remergeBook } from "./db/index.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -139,8 +140,26 @@ const stageFetch: StageFn = async (ctx) => {
 };
 
 const stageCorrect: StageFn = async (_ctx) => {
-  // Community corrections (manual overrides) not yet implemented (#35)
-  return "no corrections file found";
+  // Re-merge all books that have data from multiple sources,
+  // replaying the field-level priority strategy so that higher-priority
+  // sources win per-field.
+  const multiSourceIds = getMultiSourceBookIds();
+  if (multiSourceIds.length === 0) {
+    return "no multi-source books to merge";
+  }
+
+  let mergedCount = 0;
+  let fieldsChanged = 0;
+
+  for (const bookId of multiSourceIds) {
+    const changed = remergeBook(bookId);
+    if (changed.length > 0) {
+      mergedCount++;
+      fieldsChanged += changed.length;
+    }
+  }
+
+  return `re-merged ${mergedCount}/${multiSourceIds.length} books (${fieldsChanged} fields updated)`;
 };
 
 const stageClassify: StageFn = async (_ctx) => {
