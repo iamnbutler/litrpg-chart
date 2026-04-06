@@ -156,6 +156,7 @@
 	</main>
 
 	<footer>
+		<p class="feedback">Something look wrong? Missing a feature? <a href="https://github.com/iamnbutler/litrpg-chart/issues/new" target="_blank" rel="noopener noreferrer">Write an issue</a></p>
 		<p>Data from Audible. Cover images &copy; respective publishers.</p>
 	</footer>
 </div>
@@ -257,6 +258,19 @@
 	footer p {
 		font-size: 0.75rem;
 		color: var(--text-muted);
+	}
+
+	.feedback {
+		margin-bottom: 0.5rem;
+	}
+
+	.feedback a {
+		color: var(--accent);
+		text-decoration: none;
+	}
+
+	.feedback a:hover {
+		text-decoration: underline;
 	}
 
 	@media (max-width: 600px) {
