@@ -1,0 +1,8 @@
+{
+	"_comment": "Manual overrides for books that are misclassified or need quality adjustments. Key is ASIN.",
+	"books": {
+	},
+	"exclude": {
+		"_comment": "ASINs to exclude from the chart entirely (non-genre books that slip through search)."
+	}
+}

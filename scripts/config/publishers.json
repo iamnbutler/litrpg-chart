@@ -1,0 +1,18 @@
+{
+	"_comment": "Known genre publishers. Books from these publishers get a quality boost.",
+	"known": [
+		"Podium Audio",
+		"Podium Publishing",
+		"Aethon Books",
+		"Tantor Audio",
+		"Tantor Media",
+		"Audible Studios",
+		"Audible Originals",
+		"Recorded Books",
+		"Mountaindale Press",
+		"Portal Books",
+		"Wraithmarsh",
+		"Starlit Publishing",
+		"Royal Guard Publishing"
+	]
+}

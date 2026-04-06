@@ -17,6 +17,8 @@
 	let activeQuarter: Quarter = $state(getCurrentQuarter());
 	let activeYear: number = $state(new Date().getFullYear());
 	let activeGenres: Set<Subgenre> = $state(new Set(['litrpg', 'cultivation']));
+	let hideAI: boolean = $state(true);
+	let qualityThreshold: number = $state(0);
 
 	let booksByYear: Record<number, Book[]> = $state({});
 	let loadingYear: number | null = $state(null);
@@ -76,12 +78,20 @@
 				const month = d.getMonth();
 				if (year !== activeYear) return false;
 				if (!monthIndices.includes(month)) return false;
+				if (hideAI && b.isAINarrated) return false;
+				if ((b.qualityScore ?? 0) < qualityThreshold) return false;
 				if (activeGenres.size > 0) {
 					return b.subgenres.some((g: Subgenre) => activeGenres.has(g));
 				}
 				return true;
 			})
-			.sort((a: Book, b: Book) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+			.sort((a: Book, b: Book) => {
+				// Within the same month, sort by quality score descending
+				const monthA = new Date(a.releaseDate).getMonth();
+				const monthB = new Date(b.releaseDate).getMonth();
+				if (monthA !== monthB) return monthA - monthB;
+				return (b.qualityScore ?? 0) - (a.qualityScore ?? 0);
+			});
 	});
 
 	const monthNames = [
@@ -123,13 +133,19 @@
 				{activeGenres}
 				onGenreToggle={handleGenreToggle}
 			/>
-			<span class="count">
-				{#if isLoading}
-					loading...
-				{:else}
-					{totalCount} title{totalCount !== 1 ? 's' : ''}
-				{/if}
-			</span>
+			<div class="toolbar-right">
+				<label class="quality-toggle">
+					<input type="checkbox" bind:checked={hideAI} />
+					<span>Hide AI narrated</span>
+				</label>
+				<span class="count">
+					{#if isLoading}
+						loading...
+					{:else}
+						{totalCount} title{totalCount !== 1 ? 's' : ''}
+					{/if}
+				</span>
+			</div>
 		</div>
 
 		{#if isLoading}
@@ -208,6 +224,27 @@
 		align-items: center;
 		gap: 1rem;
 		margin-bottom: 1.5rem;
+	}
+
+	.toolbar-right {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-shrink: 0;
+	}
+
+	.quality-toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
+	.quality-toggle input {
+		accent-color: var(--accent, #6366f1);
 	}
 
 	.count {

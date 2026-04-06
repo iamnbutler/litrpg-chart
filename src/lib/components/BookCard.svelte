@@ -64,7 +64,16 @@
 		<p class="author">{book.author}</p>
 
 		{#if book.narrator}
-			<p class="narrator">Narrated by {book.narrator}</p>
+			<p class="narrator">
+				Narrated by {book.narrator}
+				{#if book.isAINarrated}
+					<span class="ai-badge">AI</span>
+				{/if}
+			</p>
+		{:else}
+			<p class="narrator">
+				<span class="ai-badge">No narrator</span>
+			</p>
 		{/if}
 
 		<p class="release-date">
@@ -72,6 +81,13 @@
 			{#if book.audiobookLength}
 				<span class="separator">&middot;</span>
 				<span class="length">{book.audiobookLength}</span>
+			{/if}
+			{#if book.rating}
+				<span class="separator">&middot;</span>
+				<span class="rating">{book.rating.toFixed(1)}&star;</span>
+				{#if book.ratingCount}
+					<span class="rating-count">({book.ratingCount.toLocaleString()})</span>
+				{/if}
 			{/if}
 		</p>
 
@@ -215,6 +231,27 @@
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		margin: 0;
+	}
+
+	.ai-badge {
+		display: inline-block;
+		font-size: 0.6rem;
+		padding: 1px 5px;
+		border-radius: 3px;
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+		font-weight: 600;
+		vertical-align: middle;
+		margin-left: 0.3rem;
+	}
+
+	.rating {
+		color: #fbbf24;
+	}
+
+	.rating-count {
+		opacity: 0.6;
+		font-size: 0.65rem;
 	}
 
 	.release-date {

@@ -1,0 +1,50 @@
+{
+	"_comment": "Known human narrators and their quality tier (1=top, 2=good, 3=decent). Books with these narrators get a quality boost.",
+	"tiers": {
+		"1": [
+			"Travis Baldree",
+			"Nick Podehl",
+			"Andrea Parsneau",
+			"Heath Miller",
+			"Luke Daniels",
+			"Jeff Hays",
+			"Soundbooth Theater",
+			"Annie Ellicott",
+			"Vikas Adam",
+			"MacLeod Andrews",
+			"Steve Campbell",
+			"John Bierce",
+			"Jason Anspach",
+			"Shiromi Arserio",
+			"Jack Voraces",
+			"Reba Buhr",
+			"Portia de Rossi",
+			"Mare Trevathan",
+			"Tim Gerard Reynolds",
+			"Phil Thron",
+			"Peter Acer"
+		],
+		"2": [
+			"Sean Duregger",
+			"Christopher Boucher",
+			"Gabriel Michael",
+			"Johnathan McClain",
+			"James Patrick Cronin",
+			"Christian J. Gilliland",
+			"Daniel Wisniewski",
+			"Michael David Axtell",
+			"Pavi Proczko",
+			"Todd Menesses",
+			"Tavia Gilbert",
+			"Justin Thomas James",
+			"Derek Perkins",
+			"Victor Bevine",
+			"Alex Perone",
+			"Adam Verner",
+			"Hayden Bishop",
+			"Jessica Almasy",
+			"Joshua Story"
+		],
+		"3": []
+	}
+}
