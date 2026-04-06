@@ -5,7 +5,7 @@
  * Usage: npm run db:export
  */
 
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type Database from "better-sqlite3";
 import { getDb, closeDb } from "../db.js";
@@ -17,7 +17,7 @@ import { getDb, closeDb } from "../db.js";
 interface ExportFilters {
   contentFilter: {
     enabled: boolean;
-    pattern: string;
+    patterns: string[];
     fields: string[];
   };
   qualityFilter: {
@@ -31,6 +31,11 @@ interface ExportFilters {
   subgenreFilter: {
     enabled: boolean;
     excludeProgressionOnlyFallback: boolean;
+  };
+  regressionGuard: {
+    enabled: boolean;
+    /** If new data has fewer than this ratio of existing data, abort */
+    minBookRatio: number;
   };
 }
 
@@ -170,52 +175,90 @@ function getDistinctSources(db: Database.Database): string[] {
 // Filters
 // ---------------------------------------------------------------------------
 
-function applyFilters(books: BookRow[], filters: ExportFilters): BookRow[] {
+function applyFilters(books: BookRow[], filters: ExportFilters): { filtered: BookRow[]; stats: FilterStats } {
   let result = books;
+  const stats: FilterStats = { content: 0, aiNarration: 0, quality: 0, subgenre: 0, contentBreakdown: {} };
 
-  // Content filter (harem/erotic)
-  if (filters.contentFilter.enabled) {
-    const re = new RegExp(filters.contentFilter.pattern, "i");
+  // Content filter (harem/erotic/romance)
+  if (filters.contentFilter.enabled && filters.contentFilter.patterns.length > 0) {
+    const compiled = filters.contentFilter.patterns.map((p) => ({
+      pattern: p,
+      re: new RegExp(p, "i"),
+    }));
     result = result.filter((b) => {
       const fields = filters.contentFilter.fields;
       const text = fields.map((f) => (b as unknown as Record<string, unknown>)[f] ?? "").join(" ");
-      return !re.test(text);
+      for (const { pattern, re } of compiled) {
+        if (re.test(text)) {
+          stats.content++;
+          stats.contentBreakdown[pattern] = (stats.contentBreakdown[pattern] ?? 0) + 1;
+          return false;
+        }
+      }
+      return true;
     });
   }
 
   // AI narration filter
   if (filters.aiNarrationFilter.enabled) {
+    const before = result.length;
     result = result.filter((b) => {
       if (!b.is_ai_narrated) return true;
-      // Allow AI-narrated books if quality score is above override threshold
       return (
         b.quality_score != null &&
         b.quality_score >= filters.aiNarrationFilter.qualityScoreOverride
       );
     });
+    stats.aiNarration = before - result.length;
   }
 
   // Quality score filter
   if (filters.qualityFilter.enabled && filters.qualityFilter.minQualityScore > 0) {
+    const before = result.length;
     result = result.filter(
       (b) =>
         b.quality_score == null ||
         b.quality_score >= filters.qualityFilter.minQualityScore,
     );
+    stats.quality = before - result.length;
   }
 
   // Subgenre filter: exclude books with no subgenre or only "progression" fallback
   if (filters.subgenreFilter.enabled && filters.subgenreFilter.excludeProgressionOnlyFallback) {
+    const before = result.length;
     result = result.filter((b) => {
-      if (!b.subgenres) return false; // no subgenres at all
+      if (!b.subgenres) return false;
       const subs = b.subgenres.split(",");
-      // Exclude if the only subgenre is the "progression" fallback
       if (subs.length === 1 && subs[0] === "progression") return false;
       return true;
     });
+    stats.subgenre = before - result.length;
   }
 
-  return result;
+  return { filtered: result, stats };
+}
+
+interface FilterStats {
+  content: number;
+  aiNarration: number;
+  quality: number;
+  subgenre: number;
+  contentBreakdown: Record<string, number>;
+}
+
+function logFilterStats(stats: FilterStats): void {
+  const total = stats.content + stats.aiNarration + stats.quality + stats.subgenre;
+  if (total === 0) return;
+  console.log(`  Filtered ${total} books:`);
+  if (stats.content > 0) {
+    console.log(`    content: ${stats.content}`);
+    for (const [pattern, count] of Object.entries(stats.contentBreakdown).sort((a, b) => b[1] - a[1])) {
+      console.log(`      ${count} matched '${pattern}'`);
+    }
+  }
+  if (stats.aiNarration > 0) console.log(`    ai-narration: ${stats.aiNarration}`);
+  if (stats.quality > 0) console.log(`    quality: ${stats.quality}`);
+  if (stats.subgenre > 0) console.log(`    subgenre-fallback: ${stats.subgenre}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -318,7 +361,27 @@ function runExport(): void {
     for (const year of years) {
       const totalBooks = countBooksByYear(db, year);
       const rows = queryBooksByYear(db, year);
-      const filtered = applyFilters(rows, filters);
+      const { filtered, stats } = applyFilters(rows, filters);
+
+      // Regression guard: compare against existing data before overwriting
+      const outPath = join(outDir, `${year}.json`);
+      if (filters.regressionGuard.enabled && existsSync(outPath)) {
+        try {
+          const existing = JSON.parse(readFileSync(outPath, "utf-8")) as unknown[];
+          const ratio = filtered.length / existing.length;
+          if (existing.length > 0 && ratio < filters.regressionGuard.minBookRatio) {
+            console.error(
+              `  REGRESSION: ${year} would drop from ${existing.length} to ${filtered.length} books (${Math.round(ratio * 100)}%). ` +
+              `Threshold: ${Math.round(filters.regressionGuard.minBookRatio * 100)}%. Skipping year.`,
+            );
+            // Preserve existing data
+            meta.years[String(year)] = { totalBooks, exportedBooks: existing.length };
+            continue;
+          }
+        } catch {
+          // Existing file is corrupt or not JSON — safe to overwrite
+        }
+      }
 
       // Compute Bayesian relevance scores and sort by them (descending)
       const scores = computeRelevanceScores(filtered);
@@ -326,11 +389,11 @@ function runExport(): void {
         .map((row) => toExportedBook(row, scores.get(row.id) ?? 0))
         .sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-      const outPath = join(outDir, `${year}.json`);
       writeFileSync(outPath, JSON.stringify(exported));
       const topScore = exported[0]?.relevanceScore ?? 0;
       const bottomScore = exported[exported.length - 1]?.relevanceScore ?? 0;
-      console.log(`${year}: ${exported.length}/${totalBooks} books → ${outPath} (scores: ${topScore}–${bottomScore}`);
+      console.log(`${year}: ${exported.length}/${totalBooks} books → ${outPath} (scores: ${topScore}–${bottomScore})`);
+      logFilterStats(stats);
 
       meta.years[String(year)] = {
         totalBooks,
