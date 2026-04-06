@@ -42,9 +42,16 @@ interface AudibleResponse {
   total_results?: number;
 }
 
+interface CategoryConfig {
+  id: string;
+  name: string;
+  maxPages: number;
+}
+
 interface SearchConfig {
   genres: string[];
   series: string[];
+  categories: CategoryConfig[];
 }
 
 function loadSearchConfig(): SearchConfig {
@@ -207,6 +214,22 @@ export class AudibleFetcher implements Fetcher {
     return [...byAsin.values()];
   }
 
+  private async fetchCategoryPage(
+    categoryId: string,
+    page: number,
+    sort?: string
+  ): Promise<AudibleResponse> {
+    const params: Record<string, string> = {
+      category_id: categoryId,
+      num_results: "50",
+      page: String(page),
+      response_groups: RESPONSE_GROUPS,
+      image_sizes: "500",
+    };
+    if (sort) params.products_sort_by = sort;
+    return this.http.get<AudibleResponse>(AUDIBLE_API, params);
+  }
+
   private processProduct(
     product: AudibleProduct,
     year: number,
@@ -243,6 +266,67 @@ export class AudibleFetcher implements Fetcher {
     let booksNew = 0;
     let booksUpdated = 0;
     let booksFound = 0;
+
+    // Category browsing: use category_id to browse Audible's genre taxonomy
+    for (const category of config.categories) {
+      const searchKey = `category:${category.name}`;
+
+      if (incremental) {
+        const cursor = getSearchCursor("audible", searchKey, year);
+        if (isCursorFresh(cursor, year, currentYear, this.staleDays)) {
+          console.log(`  [skip] ${searchKey} (cursor fresh)`);
+          continue;
+        }
+      }
+
+      const runId = insertFetchRun("audible", searchKey, year);
+      let pagesFetched = 0;
+      let resultsFound = 0;
+      let isExhausted = false;
+
+      console.log(`  Browsing category: ${category.name} (${category.id})`);
+      try {
+        for (let page = 1; page <= category.maxPages; page++) {
+          const data = await this.fetchCategoryPage(category.id, page, "-ReleaseDate");
+          const products = data.products ?? [];
+          pagesFetched++;
+          resultsFound += products.length;
+
+          if (products.length === 0) {
+            isExhausted = true;
+            break;
+          }
+
+          for (const p of products) {
+            const result = this.processProduct(p, year, seen);
+            if (result) {
+              booksFound++;
+              if (result.isNew) booksNew++;
+              else booksUpdated++;
+            }
+          }
+
+          // Stop if we've gone past the target year
+          const last = products[products.length - 1];
+          if (last?.release_date && new Date(last.release_date).getFullYear() < year) {
+            isExhausted = true;
+            break;
+          }
+
+          if (products.length < 50) {
+            isExhausted = true;
+            break;
+          }
+        }
+      } catch (err) {
+        const msg = `Category browse "${category.name}" failed: ${err instanceof Error ? err.message : err}`;
+        console.error(`  ${msg}`);
+        errors.push(msg);
+      }
+
+      completeFetchRun(runId, pagesFetched, resultsFound);
+      upsertSearchCursor("audible", searchKey, year, isExhausted);
+    }
 
     // Genre keyword searches: paginate deeply, sorted by date
     for (const keyword of config.genres) {
