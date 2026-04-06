@@ -150,6 +150,29 @@ async function fetchPage(keywords, page, sort = '-ReleaseDate') {
 	return res.json();
 }
 
+/**
+ * Fetch a page multiple times, merge all products by ASIN.
+ * The Audible API is flaky and sometimes returns partial results,
+ * so we do best-of-3 and merge to maximize coverage.
+ */
+async function fetchPageMerged(keywords, page, sort, attempts = 3) {
+	const productsByAsin = new Map();
+	for (let i = 0; i < attempts; i++) {
+		try {
+			const data = await fetchPage(keywords, page, sort);
+			for (const p of (data.products ?? [])) {
+				if (!productsByAsin.has(p.asin)) {
+					productsByAsin.set(p.asin, p);
+				}
+			}
+			// If we got a full page, good enough
+			if ((data.products?.length ?? 0) >= 50) break;
+		} catch { /* retry */ }
+		if (i < attempts - 1) await new Promise(r => setTimeout(r, 500));
+	}
+	return { products: [...productsByAsin.values()] };
+}
+
 async function fetchYear(year) {
 	const seen = new Set();
 	const books = [];
@@ -185,11 +208,11 @@ async function fetchYear(year) {
 		await new Promise(r => setTimeout(r, 300));
 	}
 
-	// Series searches: just grab all results (no date sort — it breaks some queries)
+	// Series searches: merged best-of-3 per page (no date sort — it breaks some queries)
 	for (const keyword of SERIES_SEARCHES) {
 		try {
 			for (let page = 1; page <= 3; page++) {
-				const data = await fetchPage(keyword, page, '');
+				const data = await fetchPageMerged(keyword, page, '', 3);
 				if (!data.products || data.products.length === 0) break;
 				await processProducts(data);
 
@@ -207,7 +230,7 @@ async function fetchYear(year) {
 }
 
 async function main() {
-	const { mkdirSync, writeFileSync } = await import('node:fs');
+	const { mkdirSync, writeFileSync, existsSync } = await import('node:fs');
 	const { join } = await import('node:path');
 
 	const outDir = join(import.meta.dirname, '..', 'static', 'data');
@@ -217,9 +240,16 @@ async function main() {
 	const years = [currentYear - 1, currentYear, currentYear + 1];
 
 	for (const year of years) {
+		const outPath = join(outDir, `${year}.json`);
+
+		// Cache past years — unlikely to change, skip if already fetched
+		if (year < currentYear && existsSync(outPath)) {
+			console.log(`${year}: cached (skipping)`);
+			continue;
+		}
+
 		console.log(`Fetching ${year}...`);
 		const books = await fetchYear(year);
-		const outPath = join(outDir, `${year}.json`);
 		writeFileSync(outPath, JSON.stringify(books));
 		console.log(`  ${books.length} books → ${outPath}`);
 	}
