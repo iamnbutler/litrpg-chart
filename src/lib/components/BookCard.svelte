@@ -221,11 +221,14 @@
 	}
 
 	.link-btn {
+		display: inline;
 		background: none;
 		border: none;
 		padding: 0;
 		margin: 0;
-		font: inherit;
+		font-family: inherit;
+		font-size: inherit;
+		font-weight: inherit;
 		color: inherit;
 		cursor: pointer;
 		text-decoration: underline;
