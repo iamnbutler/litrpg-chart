@@ -135,11 +135,13 @@
 	<header>
 		<div class="header-inner">
 			<h1 class="title">LitRPG Chart</h1>
-			<SeasonNav
-				{activeQuarter}
-				{activeYear}
-				onSeasonChange={handleSeasonChange}
-			/>
+			<div class="header-nav">
+				<SeasonNav
+					{activeQuarter}
+					{activeYear}
+					onSeasonChange={handleSeasonChange}
+				/>
+			</div>
 		</div>
 	</header>
 
@@ -212,6 +214,14 @@
 		<p class="feedback">Something look wrong? Missing a feature? <a href="https://github.com/iamnbutler/litrpg-chart/issues/new" target="_blank" rel="noopener noreferrer">Write an issue</a></p>
 		<p>Data from Audible. Cover images &copy; respective publishers. AI-narrated titles excluded.</p>
 	</footer>
+
+	<div class="mobile-bottom-bar">
+		<SeasonNav
+			{activeQuarter}
+			{activeYear}
+			onSeasonChange={handleSeasonChange}
+		/>
+	</div>
 </div>
 
 <style>
@@ -321,8 +331,15 @@
 
 	.book-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+		grid-template-columns: repeat(2, 1fr);
 		gap: 1.5rem;
+	}
+
+	@media (max-width: 850px) {
+		.book-grid {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
 	}
 
 
@@ -363,22 +380,64 @@
 		text-decoration: underline;
 	}
 
+	.mobile-bottom-bar {
+		display: none;
+	}
+
+	.header-nav {
+		display: contents;
+	}
+
 	@media (max-width: 600px) {
+		header {
+			position: static;
+			background: transparent;
+			border-bottom: none;
+		}
+
 		.header-inner {
-			padding: 0.75rem 1rem;
+			padding: 0.75rem;
+			justify-content: flex-start;
+		}
+
+		.header-nav {
+			display: none;
+		}
+
+		.title {
+			font-size: 1rem;
 		}
 
 		main {
-			padding: 1rem;
+			padding: 0 0.75rem;
+			padding-bottom: 4.5rem;
 		}
 
 		.toolbar {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: 0.5rem;
 		}
 
 		.book-grid {
 			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		.mobile-bottom-bar {
+			display: flex;
+			justify-content: center;
+			position: fixed;
+			bottom: calc(0.75rem + env(safe-area-inset-bottom));
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 20;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 0.5rem 1rem;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+			width: auto;
 		}
 	}
 </style>

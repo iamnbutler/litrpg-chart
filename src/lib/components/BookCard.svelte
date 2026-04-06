@@ -261,18 +261,22 @@
 		overflow: hidden;
 	}
 
-	@media (max-width: 600px) {
+	@media (max-width: 500px) {
 		.book-card {
-			grid-template-columns: 1fr 100px;
+			grid-template-columns: 1fr 110px;
 		}
 
 		.cover {
-			width: 100px;
-			min-height: 150px;
+			width: 110px;
+			min-height: 160px;
 		}
 
 		.title {
 			font-size: 0.85rem;
+		}
+
+		.info {
+			padding: 0.75rem;
 		}
 	}
 </style>
