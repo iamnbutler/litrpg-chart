@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type-check backend
+        run: npx tsc --project tsconfig.backend.json --noEmit
+
+      - name: Type-check frontend
+        run: npx svelte-kit sync && npx svelte-check --tsconfig ./tsconfig.json
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build frontend
+        run: npx vite build
