@@ -1,0 +1,20 @@
+{
+  "contentFilter": {
+    "enabled": true,
+    "pattern": "harem|haremlit|reverse\\s*harem|men'?s\\s*adventure|smut|erotic|\\bspicy\\b|adult\\s*fantasy\\s*romance|intimate\\s*scene",
+    "fields": ["title", "subtitle", "description"]
+  },
+  "qualityFilter": {
+    "enabled": true,
+    "minimumScore": 0.3
+  },
+  "aiNarrationFilter": {
+    "enabled": true,
+    "qualityScoreOverride": 0.8
+  },
+  "subgenreFilter": {
+    "enabled": true,
+    "excludeDefaultFallbackOnly": true,
+    "defaultFallback": "progression"
+  }
+}
