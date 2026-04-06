@@ -19,6 +19,7 @@ export interface BookRow {
   rating_count: number | null;
   description: string | null;
   url: string | null;
+  is_ai_narrated: boolean;
 }
 
 /**
@@ -60,19 +61,20 @@ export function upsertBook(book: BookRow): boolean {
         cover_url = @cover_url, runtime_minutes = @runtime_minutes,
         rating = @rating, rating_count = @rating_count,
         description = @description, url = @url,
+        is_ai_narrated = @is_ai_narrated,
         updated_at = datetime('now')
       WHERE id = @id`
-    ).run({ ...book, series_id: seriesId });
+    ).run({ ...book, series_id: seriesId, is_ai_narrated: book.is_ai_narrated ? 1 : 0 });
     return false; // updated
   } else {
     db.prepare(
       `INSERT INTO books (id, title, subtitle, author, narrator, series_id,
         series_number, release_date, cover_url, runtime_minutes,
-        rating, rating_count, description, url)
+        rating, rating_count, description, url, is_ai_narrated)
       VALUES (@id, @title, @subtitle, @author, @narrator, @series_id,
         @series_number, @release_date, @cover_url, @runtime_minutes,
-        @rating, @rating_count, @description, @url)`
-    ).run({ ...book, series_id: seriesId });
+        @rating, @rating_count, @description, @url, @is_ai_narrated)`
+    ).run({ ...book, series_id: seriesId, is_ai_narrated: book.is_ai_narrated ? 1 : 0 });
     return true; // new
   }
 }
