@@ -145,7 +145,9 @@ async function fetchPage(keywords, page, sort = '-ReleaseDate') {
 		image_sizes: '500'
 	});
 	if (sort) params.set('products_sort_by', sort);
-	const res = await fetch(`${AUDIBLE_API}?${params}`);
+	const res = await fetch(`${AUDIBLE_API}?${params}`, {
+		signal: AbortSignal.timeout(15_000)
+	});
 	if (!res.ok) throw new Error(`Audible API error: ${res.status}`);
 	return res.json();
 }
