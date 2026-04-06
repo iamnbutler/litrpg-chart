@@ -98,8 +98,11 @@ async function fetchYear(year) {
 
 	for (const keyword of GENRE_SEARCHES) {
 		try {
-			for (let page = 1; page <= 2; page++) {
+			const maxPages = 15; // enough to cover a full year
+			for (let page = 1; page <= maxPages; page++) {
 				const data = await fetchPage(keyword, page);
+				if (!data.products || data.products.length === 0) break;
+
 				for (const p of data.products) {
 					if (seen.has(p.asin)) continue;
 					if (p.language !== 'english') continue;
@@ -109,9 +112,11 @@ async function fetchYear(year) {
 					seen.add(p.asin);
 					books.push(productToBook(p));
 				}
+
+				// Stop paginating once we've passed the target year
 				const last = data.products[data.products.length - 1];
 				if (last && new Date(last.release_date).getFullYear() < year) break;
-				if (page < 2) await new Promise(r => setTimeout(r, 500));
+				await new Promise(r => setTimeout(r, 300));
 			}
 		} catch (err) {
 			console.error(`  Failed "${keyword}":`, err.message);
