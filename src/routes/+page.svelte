@@ -6,6 +6,7 @@
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
 	import GenreFilter from '$lib/components/GenreFilter.svelte';
 	import FilterPopover from '$lib/components/FilterPopover.svelte';
+	import BrowseModal from '$lib/components/BrowseModal.svelte';
 
 	function getCurrentQuarter(): Quarter {
 		const month = new Date().getMonth();
@@ -72,38 +73,37 @@
 	const currentBooks = $derived(booksByYear[activeYear] ?? []);
 	const isLoading = $derived(loadingYear === activeYear);
 
-	/** All books across loaded years (for author/series views) */
+	/** All books across loaded years (for author/series modal) */
 	const allLoadedBooks = $derived(Object.values(booksByYear).flat());
 
-	const filteredBooks = $derived.by(() => {
-		// When an author/series filter is active, search all loaded years
-		if (activeFilter) {
-			return allLoadedBooks
-				.filter((b: Book) => {
-					if (activeFilter!.type === 'author') {
-						const name = activeFilter!.value.toLowerCase();
-						const authors = b.author?.toLowerCase().split(',').map(s => s.trim()) ?? [];
-						return authors.some(a => a === name);
-					}
-					if (activeFilter!.type === 'narrator') {
-						const name = activeFilter!.value.toLowerCase();
-						const narrators = b.narrator?.toLowerCase().split(',').map(s => s.trim()) ?? [];
-						return narrators.some(n => n === name);
-					}
-					if (activeFilter!.type === 'series') {
-						return b.series === activeFilter!.value;
-					}
-					return true;
-				})
-				.sort((a: Book, b: Book) => {
-					// Sort series by book number, authors by relevance
-					if (activeFilter!.type === 'series' && a.seriesNumber != null && b.seriesNumber != null) {
-						return a.seriesNumber - b.seriesNumber;
-					}
-					return b.relevanceScore - a.relevanceScore;
-				});
-		}
+	const modalBooks = $derived.by(() => {
+		if (!activeFilter) return [];
+		return allLoadedBooks
+			.filter((b: Book) => {
+				if (activeFilter!.type === 'author') {
+					const name = activeFilter!.value.toLowerCase();
+					const authors = b.author?.toLowerCase().split(',').map(s => s.trim()) ?? [];
+					return authors.some(a => a === name);
+				}
+				if (activeFilter!.type === 'narrator') {
+					const name = activeFilter!.value.toLowerCase();
+					const narrators = b.narrator?.toLowerCase().split(',').map(s => s.trim()) ?? [];
+					return narrators.some(n => n === name);
+				}
+				if (activeFilter!.type === 'series') {
+					return b.series === activeFilter!.value;
+				}
+				return true;
+			})
+			.sort((a: Book, b: Book) => {
+				if (activeFilter!.type === 'series' && a.seriesNumber != null && b.seriesNumber != null) {
+					return a.seriesNumber - b.seriesNumber;
+				}
+				return b.relevanceScore - a.relevanceScore;
+			});
+	});
 
+	const filteredBooks = $derived.by(() => {
 		const monthIndices = quarterMonthIndices[activeQuarter];
 		return currentBooks
 			.filter((b: Book) => {
@@ -241,35 +241,16 @@
 			</div>
 		</div>
 
-		{#if activeFilter}
-			<div class="active-filter-bar">
-				<span class="filter-label">
-					{#if activeFilter.type === 'author'}
-						Books by <strong>{activeFilter.value}</strong>
-					{:else if activeFilter.type === 'narrator'}
-						Books narrated by <strong>{activeFilter.value}</strong>
-					{:else}
-						<strong>{activeFilter.value}</strong> series
-					{/if}
-				</span>
-				<button class="clear-filter" onclick={clearFilter}>&times;</button>
-			</div>
-		{/if}
-
 		{#if isLoading}
 			<div class="empty">
 				<p>Loading {activeYear} audiobooks...</p>
 			</div>
 		{:else if filteredBooks.length === 0}
 			<div class="empty">
-				<p>No audiobooks found{activeFilter ? ` for "${activeFilter.value}"` : ' for this season'}.</p>
-				{#if activeFilter}
-					<button class="clear-link" onclick={clearFilter}>Clear filter</button>
-				{:else}
-					<p class="empty-sub">Try a different season or clear your filters.</p>
-				{/if}
+				<p>No audiobooks found for this season.</p>
+				<p class="empty-sub">Try a different season or clear your filters.</p>
 			</div>
-		{:else if activeFilter || sortMode === 'relevance'}
+		{:else if sortMode === 'relevance'}
 			<div class="book-grid">
 				{#each filteredBooks as book (book.id)}
 					<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} />
@@ -293,6 +274,17 @@
 		<p class="feedback">Something look wrong? Missing a feature? <a href="https://github.com/iamnbutler/litrpg-chart/issues/new" target="_blank" rel="noopener noreferrer">Write an issue</a></p>
 		<p>Data from Audible. Cover images &copy; respective publishers. AI-narrated titles excluded.</p>
 	</footer>
+
+	{#if activeFilter}
+		<BrowseModal
+			filter={activeFilter}
+			books={modalBooks}
+			onClose={clearFilter}
+			onAuthorClick={handleAuthorClick}
+			onNarratorClick={handleNarratorClick}
+			onSeriesClick={handleSeriesClick}
+		/>
+	{/if}
 
 	<div class="mobile-bottom-bar">
 		<SeasonNav
@@ -421,49 +413,6 @@
 		}
 	}
 
-
-	.active-filter-bar {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.5rem 0.75rem;
-		background: color-mix(in srgb, var(--accent) 10%, transparent);
-		border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-		border-radius: 8px;
-		margin-bottom: 1rem;
-	}
-
-	.filter-label {
-		font-family: var(--font-serif);
-		font-size: 0.85rem;
-		color: var(--text-primary);
-	}
-
-	.clear-filter {
-		all: unset;
-		cursor: pointer;
-		font-size: 1.2rem;
-		color: var(--text-muted);
-		padding: 0 0.25rem;
-		line-height: 1;
-	}
-
-	.clear-filter:hover {
-		color: var(--text-primary);
-	}
-
-	.clear-link {
-		all: unset;
-		cursor: pointer;
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		color: var(--accent);
-		margin-top: 0.5rem;
-	}
-
-	.clear-link:hover {
-		text-decoration: underline;
-	}
 
 	.empty {
 		text-align: center;
