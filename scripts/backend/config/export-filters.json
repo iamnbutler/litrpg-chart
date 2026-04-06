@@ -1,7 +1,28 @@
 {
   "contentFilter": {
     "enabled": true,
-    "pattern": "harem|haremlit|reverse\\s*harem|men'?s\\s*adventure|smut|erotic|\\bspicy\\b|adult\\s*fantasy\\s*romance|intimate\\s*scene",
+    "patterns": [
+      "harem",
+      "haremlit",
+      "reverse\\s*harem",
+      "men'?s\\s*adventure",
+      "smut",
+      "erotic",
+      "\\bspicy\\b",
+      "adult\\s*fantasy\\s*romance",
+      "intimate\\s*scene",
+      "monster\\s*romance",
+      "romantasy",
+      "omegaverse",
+      "fated\\s*mate",
+      "rejected\\s*mate",
+      "alpha.*omega",
+      "heat\\s*cycle",
+      "breeding",
+      "explicit.*content",
+      "18\\+",
+      "mature.*content"
+    ],
     "fields": ["title", "description"]
   },
   "qualityFilter": {
@@ -15,5 +36,9 @@
   "subgenreFilter": {
     "enabled": true,
     "excludeProgressionOnlyFallback": true
+  },
+  "regressionGuard": {
+    "enabled": true,
+    "minBookRatio": 0.5
   }
 }
