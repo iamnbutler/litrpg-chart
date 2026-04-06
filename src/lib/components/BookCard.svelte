@@ -2,9 +2,10 @@
 	import type { Book } from '$lib/types';
 	import { subgenreLabels, subgenreColors } from '$lib/types';
 
-	let { book, onAuthorClick, onSeriesClick }: {
+	let { book, onAuthorClick, onNarratorClick, onSeriesClick }: {
 		book: Book;
 		onAuthorClick?: (name: string) => void;
+		onNarratorClick?: (name: string) => void;
 		onSeriesClick?: (series: string) => void;
 	} = $props();
 
@@ -40,7 +41,7 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{#each book.author.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each} {#if book.narrator}<span class="narrator">with {#each book.narrator.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each}</span>{/if}</p>
+		<p class="author">{#each book.author.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each} {#if book.narrator}<span class="narrator">with {#each book.narrator.split(', ') as name, i}{#if i > 0}, {/if}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}

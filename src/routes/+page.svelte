@@ -83,8 +83,12 @@
 					if (activeFilter!.type === 'author') {
 						const name = activeFilter!.value.toLowerCase();
 						const authors = b.author?.toLowerCase().split(',').map(s => s.trim()) ?? [];
+						return authors.some(a => a === name);
+					}
+					if (activeFilter!.type === 'narrator') {
+						const name = activeFilter!.value.toLowerCase();
 						const narrators = b.narrator?.toLowerCase().split(',').map(s => s.trim()) ?? [];
-						return authors.some(a => a === name) || narrators.some(n => n === name);
+						return narrators.some(n => n === name);
 					}
 					if (activeFilter!.type === 'series') {
 						return b.series === activeFilter!.value;
@@ -144,7 +148,14 @@
 
 	function handleAuthorClick(name: string) {
 		activeFilter = { type: 'author', value: name };
-		// Load adjacent years for fuller results
+		const y = new Date().getFullYear();
+		fetchYear(y - 1);
+		fetchYear(y);
+		fetchYear(y + 1);
+	}
+
+	function handleNarratorClick(name: string) {
+		activeFilter = { type: 'narrator', value: name };
 		const y = new Date().getFullYear();
 		fetchYear(y - 1);
 		fetchYear(y);
@@ -235,6 +246,8 @@
 				<span class="filter-label">
 					{#if activeFilter.type === 'author'}
 						Books by <strong>{activeFilter.value}</strong>
+					{:else if activeFilter.type === 'narrator'}
+						Books narrated by <strong>{activeFilter.value}</strong>
 					{:else}
 						<strong>{activeFilter.value}</strong> series
 					{/if}
@@ -259,7 +272,7 @@
 		{:else if activeFilter || sortMode === 'relevance'}
 			<div class="book-grid">
 				{#each filteredBooks as book (book.id)}
-					<BookCard {book} onAuthorClick={handleAuthorClick} onSeriesClick={handleSeriesClick} />
+					<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} />
 				{/each}
 			</div>
 		{:else}
@@ -268,7 +281,7 @@
 					<h2 class="month-heading">{group.month}</h2>
 					<div class="book-grid">
 						{#each group.books as book (book.id)}
-							<BookCard {book} onAuthorClick={handleAuthorClick} onSeriesClick={handleSeriesClick} />
+							<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} />
 						{/each}
 					</div>
 				</section>
