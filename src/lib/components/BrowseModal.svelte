@@ -22,7 +22,7 @@
 
 	function handleClose() {
 		closing = true;
-		setTimeout(onClose, 350);
+		setTimeout(onClose, 230);
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -65,39 +65,65 @@
 </div>
 
 <style>
+	@property --ring-size {
+		syntax: '<length>';
+		inherits: false;
+		initial-value: 40px;
+	}
+
+	@property --ring-gap {
+		syntax: '<length>';
+		inherits: false;
+		initial-value: 80px;
+	}
+
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
 		z-index: 50;
-		background-color: var(--bg);
+		background-color: color-mix(in srgb, var(--bg) 90%, transparent);
 		background-image:
-			radial-gradient(circle at center center, var(--border), var(--bg)),
-			repeating-radial-gradient(circle at center center, var(--border), var(--border) 40px, transparent 80px, transparent 40px);
+			radial-gradient(circle at center center, color-mix(in srgb, var(--border) 10%, transparent), transparent),
+			repeating-radial-gradient(circle at center center, color-mix(in srgb, var(--border) 10%, transparent), color-mix(in srgb, var(--border) 10%, transparent) var(--ring-size), transparent var(--ring-gap), transparent var(--ring-size));
 		background-blend-mode: multiply;
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
 		padding: 3rem 1rem;
 		overflow-y: auto;
-		animation: fadeIn 0.25s ease;
-		transition: background-image 0.35s ease;
+		--ring-size: 40px;
+		--ring-gap: 80px;
+		animation: openBg 0.3s ease-out forwards;
 	}
 
 	.modal-backdrop.closing {
-		animation: fadeOut 0.35s ease forwards;
-		background-image:
-			radial-gradient(circle at center center, var(--border), var(--bg)),
-			repeating-radial-gradient(circle at center center, var(--border), var(--border) 8px, transparent 16px, transparent 8px);
+		animation: closeBg 0.23s ease-out forwards;
 	}
 
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+	@keyframes openBg {
+		0% {
+			opacity: 0;
+			--ring-size: 60px;
+			--ring-gap: 120px;
+		}
+		100% {
+			opacity: 1;
+			--ring-size: 40px;
+			--ring-gap: 80px;
+		}
 	}
 
-	@keyframes fadeOut {
-		from { opacity: 1; }
-		to { opacity: 0; }
+	@keyframes closeBg {
+		0% {
+			opacity: 1;
+			--ring-size: 40px;
+			--ring-gap: 80px;
+		}
+		100% {
+			opacity: 0;
+			--ring-size: 24px;
+			--ring-gap: 48px;
+		}
 	}
 
 	.modal {
