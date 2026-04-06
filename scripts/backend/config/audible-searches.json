@@ -46,5 +46,8 @@
 		"forge of destiny",
 		"solo leveling audiobook"
 	],
-	"categories": []
+	"categories": [
+		{ "id": "18580606011", "name": "Fantasy", "maxPages": 20 },
+		{ "id": "18580607011", "name": "Science Fiction", "maxPages": 20 }
+	]
 }

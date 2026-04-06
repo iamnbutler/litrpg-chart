@@ -172,6 +172,14 @@ function validateAudibleSearches(data: unknown): AudibleSearchesConfig {
 
 	const categories = (obj.categories ?? []) as unknown[];
 	requireArray(categories, 'audible-searches.categories');
+	for (let i = 0; i < categories.length; i++) {
+		const cat = categories[i];
+		requireObject(cat, `audible-searches.categories[${i}]`);
+		const c = cat as Record<string, unknown>;
+		requireString(c.id, `audible-searches.categories[${i}].id`);
+		requireString(c.name, `audible-searches.categories[${i}].name`);
+		requireNumber(c.maxPages, `audible-searches.categories[${i}].maxPages`);
+	}
 
 	return {
 		genres: obj.genres as string[],
