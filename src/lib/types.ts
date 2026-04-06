@@ -13,7 +13,12 @@ export interface Book {
 	subgenres: Subgenre[];
 	description: string;
 	url?: string;
+	rating?: number;
+	ratingCount?: number;
+	relevanceScore: number;
 }
+
+export type SortMode = 'relevance' | 'date';
 
 export const subgenreLabels: Record<Subgenre, string> = {
 	litrpg: 'LitRPG',

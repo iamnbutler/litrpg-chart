@@ -68,6 +68,7 @@ interface ExportedBook {
   url?: string;
   rating?: number;
   ratingCount?: number;
+  relevanceScore: number;
 }
 
 interface YearMeta {
@@ -134,7 +135,7 @@ function queryBooksByYear(db: Database.Database, year: number): BookRow[] {
     LEFT JOIN book_subgenres bsg ON bsg.book_id = b.id
     WHERE substr(b.release_date, 1, 4) = ?
     GROUP BY b.id
-    ORDER BY b.release_date ASC
+    ORDER BY b.id
   `);
 
   return stmt.all(String(year)) as BookRow[];
@@ -218,10 +219,60 @@ function applyFilters(books: BookRow[], filters: ExportFilters): BookRow[] {
 }
 
 // ---------------------------------------------------------------------------
+// Relevance scoring — Bayesian weighted rating
+// ---------------------------------------------------------------------------
+
+/**
+ * Compute Bayesian weighted rating for a set of books.
+ *
+ * score = (v * R + m * C) / (v + m)
+ *
+ * Where:
+ *   v = this book's rating count
+ *   R = this book's average rating
+ *   m = confidence threshold (median rating count across all books)
+ *   C = global mean rating across all books
+ *
+ * This pulls low-vote books toward the mean while letting
+ * well-reviewed books surface naturally.
+ */
+function computeRelevanceScores(books: BookRow[]): Map<string, number> {
+  const scored = books.filter((b) => b.rating != null && b.rating_count != null && b.rating_count > 0);
+  if (scored.length === 0) return new Map();
+
+  // Global mean rating
+  const totalRating = scored.reduce((sum, b) => sum + b.rating! * b.rating_count!, 0);
+  const totalVotes = scored.reduce((sum, b) => sum + b.rating_count!, 0);
+  const C = totalVotes > 0 ? totalRating / totalVotes : 0;
+
+  // Median rating count as confidence threshold
+  const counts = scored.map((b) => b.rating_count!).sort((a, b) => a - b);
+  const m = counts[Math.floor(counts.length / 2)];
+
+  const scores = new Map<string, number>();
+  for (const book of books) {
+    const v = book.rating_count ?? 0;
+    const R = book.rating ?? 0;
+    if (v === 0) {
+      scores.set(book.id, 0);
+    } else {
+      // Bayesian average for quality estimation, multiplied by
+      // log2(1 + ratingCount) to reward engagement. This makes a
+      // 4.9-star book with 4000 ratings rank well above a 4.9-star
+      // book with 20 ratings — which is what a "chart" should do.
+      const bayesian = (v * R + m * C) / (v + m);
+      scores.set(book.id, bayesian * Math.log2(1 + v));
+    }
+  }
+
+  return scores;
+}
+
+// ---------------------------------------------------------------------------
 // Transform
 // ---------------------------------------------------------------------------
 
-function toExportedBook(row: BookRow): ExportedBook {
+function toExportedBook(row: BookRow, relevanceScore: number): ExportedBook {
   const book: ExportedBook = {
     id: row.id,
     title: row.title,
@@ -231,6 +282,7 @@ function toExportedBook(row: BookRow): ExportedBook {
     releaseDate: `${row.release_date}T00:00:00Z`,
     subgenres: row.subgenres ? row.subgenres.split(",") : [],
     description: row.description ?? "",
+    relevanceScore: Math.round(relevanceScore * 100) / 100,
   };
 
   if (row.narrator) book.narrator = row.narrator;
@@ -267,11 +319,18 @@ function runExport(): void {
       const totalBooks = countBooksByYear(db, year);
       const rows = queryBooksByYear(db, year);
       const filtered = applyFilters(rows, filters);
-      const exported = filtered.map(toExportedBook);
+
+      // Compute Bayesian relevance scores and sort by them (descending)
+      const scores = computeRelevanceScores(filtered);
+      const exported = filtered
+        .map((row) => toExportedBook(row, scores.get(row.id) ?? 0))
+        .sort((a, b) => b.relevanceScore - a.relevanceScore);
 
       const outPath = join(outDir, `${year}.json`);
       writeFileSync(outPath, JSON.stringify(exported));
-      console.log(`${year}: ${exported.length}/${totalBooks} books → ${outPath}`);
+      const topScore = exported[0]?.relevanceScore ?? 0;
+      const bottomScore = exported[exported.length - 1]?.relevanceScore ?? 0;
+      console.log(`${year}: ${exported.length}/${totalBooks} books → ${outPath} (scores: ${topScore}–${bottomScore}`);
 
       meta.years[String(year)] = {
         totalBooks,
