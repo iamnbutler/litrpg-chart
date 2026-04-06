@@ -15,6 +15,7 @@ export interface HttpClientOptions {
 export interface HttpClient {
   get<T>(url: string, params?: Record<string, string>): Promise<T>;
   getJson<T>(url: string, params?: Record<string, string>): Promise<T>;
+  post<T>(url: string, body: unknown, headers?: Record<string, string>): Promise<T>;
 }
 
 export class HttpError extends Error {
@@ -102,9 +103,13 @@ export function createHttpClient(
     );
   }
 
-  async function request<T>(url: string): Promise<T> {
+  async function request<T>(
+    url: string,
+    fetchOptions?: { method?: string; body?: string; headers?: Record<string, string> },
+  ): Promise<T> {
     const parsedUrl = new URL(url);
     const host = parsedUrl.host;
+    const method = fetchOptions?.method ?? "GET";
 
     for (let attempt = 1; attempt <= config.maxRetries + 1; attempt++) {
       await rateLimitDelay(host);
@@ -114,7 +119,9 @@ export function createHttpClient(
 
       try {
         response = await fetchImpl(url, {
-          headers: { "User-Agent": config.userAgent },
+          method,
+          headers: { "User-Agent": config.userAgent, ...fetchOptions?.headers },
+          body: fetchOptions?.body,
           signal: AbortSignal.timeout(config.timeoutMs),
         });
       } catch (err: unknown) {
@@ -124,7 +131,7 @@ export function createHttpClient(
         const isTimeout =
           err instanceof DOMException && err.name === "TimeoutError";
         const label = isTimeout ? "TIMEOUT" : "NETWORK_ERROR";
-        log("GET", url, label, durationMs, attempt);
+        log(method, url, label, durationMs, attempt);
 
         if (attempt <= config.maxRetries) {
           const backoff = withJitter(1000 * 2 ** (attempt - 1));
@@ -136,7 +143,7 @@ export function createHttpClient(
 
       const durationMs = Date.now() - start;
       recordRequest(host);
-      log("GET", url, response.status, durationMs, attempt);
+      log(method, url, response.status, durationMs, attempt);
 
       if (response.ok) {
         return (await response.json()) as T;
@@ -195,6 +202,13 @@ export function createHttpClient(
     },
     getJson<T>(url: string, params?: Record<string, string>): Promise<T> {
       return request<T>(buildUrl(url, params));
+    },
+    post<T>(url: string, body: unknown, headers?: Record<string, string>): Promise<T> {
+      return request<T>(url, {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: { "Content-Type": "application/json", ...headers },
+      });
     },
   };
 }
