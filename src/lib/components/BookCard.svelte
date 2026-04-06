@@ -53,14 +53,15 @@
 			<p class="description">{book.description}</p>
 		{/if}
 
-		{#if book.series}
-			<button class="series-line link-btn" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>{book.series}{#if book.seriesNumber} &ndash; Book {book.seriesNumber}{/if}</button>
-		{/if}
 		<p class="meta-line">
 			{formatDate(book.releaseDate)}
 			{#if book.audiobookLength}
 				<span class="separator">&middot;</span>
 				<span class="length">{book.audiobookLength}</span>
+			{/if}
+			{#if book.series}
+				<span class="separator">&middot;</span>
+				<button class="link-btn series-link" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>{book.series}{#if book.seriesNumber} #{book.seriesNumber}{/if}</button>
 			{/if}
 		</p>
 	</div>
@@ -203,15 +204,13 @@
 		text-wrap: balance;
 	}
 
-	.series-line {
+	.series-link {
 		font-family: var(--font-mono, monospace);
-		font-size: 0.7rem;
-		color: var(--text-muted);
-		margin-top: auto;
-		padding-top: 0.35rem;
+		font-size: inherit;
+		color: inherit;
 	}
 
-	.author {
+.author {
 		font-family: var(--font-serif);
 		font-size: 0.8rem;
 		color: var(--text-secondary);
@@ -239,7 +238,7 @@
 		font-family: var(--font-mono, monospace);
 		font-size: 0.7rem;
 		color: var(--text-muted);
-		margin: 0;
+		margin: auto 0 0;
 		padding-top: 0.5rem;
 	}
 
