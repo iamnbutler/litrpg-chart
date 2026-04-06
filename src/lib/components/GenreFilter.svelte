@@ -4,9 +4,11 @@
 
 	let {
 		activeGenres,
+		counts = {},
 		onGenreToggle
 	}: {
 		activeGenres: Set<Subgenre>;
+		counts?: Record<string, number>;
 		onGenreToggle: (g: Subgenre) => void;
 	} = $props();
 
@@ -21,7 +23,7 @@
 			style="--genre-color: {subgenreColors[key]}"
 			onclick={() => onGenreToggle(key)}
 		>
-			{label}
+			{label}{#if counts[key] != null}<span class="genre-count">&nbsp;{counts[key]}</span>{/if}
 		</button>
 	{/each}
 </div>
@@ -40,7 +42,8 @@
 		color: var(--text-muted);
 		border-radius: 20px;
 		cursor: pointer;
-		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
 		font-weight: 500;
 		transition: all 0.15s ease;
 	}
@@ -54,5 +57,9 @@
 		background: color-mix(in srgb, var(--genre-color) 15%, transparent);
 		border-color: var(--genre-color);
 		color: var(--genre-color);
+	}
+
+	.genre-count {
+		opacity: 0.6;
 	}
 </style>

@@ -98,12 +98,14 @@
 	}
 
 	.season-label {
+		font-family: var(--font-serif);
 		font-size: 0.85rem;
 		font-weight: 600;
 	}
 
 	.season-year {
-		font-size: 0.65rem;
+		font-family: var(--font-mono);
+		font-size: 0.6rem;
 		font-weight: 400;
 		opacity: 0.6;
 	}

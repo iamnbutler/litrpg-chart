@@ -61,32 +61,28 @@
 
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{book.author}</p>
+		<p class="author">{book.author} {#if book.narrator}<span class="narrator">with {book.narrator}</span>{/if}</p>
 
-		{#if book.narrator}
-			<p class="narrator">Narrated by {book.narrator}</p>
+		<div class="tags">
+			{#each book.subgenres as genre}
+				<span class="tag" style="--tag-color: {subgenreColors[genre]}">{subgenreLabels[genre]}</span>
+			{/each}
+			{#if book.seriesNumber}
+				<span class="tag series-tag">Book {book.seriesNumber}</span>
+			{/if}
+		</div>
+
+		{#if book.description}
+			<p class="description">{book.description}</p>
 		{/if}
 
-		<p class="release-date">
+		<p class="meta-line">
 			{formatDate(book.releaseDate)}
 			{#if book.audiobookLength}
 				<span class="separator">&middot;</span>
 				<span class="length">{book.audiobookLength}</span>
 			{/if}
 		</p>
-
-		<div class="tags">
-			{#if book.seriesNumber}
-				<span class="tag series-tag">Book {book.seriesNumber}</span>
-			{/if}
-			{#each book.subgenres as genre}
-				<span class="tag" style="--tag-color: {subgenreColors[genre]}">{subgenreLabels[genre]}</span>
-			{/each}
-		</div>
-
-		{#if book.description}
-			<p class="description">{book.description}</p>
-		{/if}
 	</div>
 </a>
 
@@ -99,14 +95,8 @@
 		border-radius: 12px;
 		overflow: hidden;
 		border: 1px solid var(--border);
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
 		text-decoration: none;
 		color: inherit;
-	}
-
-	.book-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 	}
 
 	.cover {
@@ -114,7 +104,7 @@
 		width: 130px;
 		min-height: 195px;
 		overflow: hidden;
-		background: #1a1d2e;
+		background: var(--surface);
 	}
 
 	.cover img {
@@ -163,29 +153,30 @@
 	}
 
 	.countdown-text {
-		background: rgba(0, 0, 0, 0.75);
-		color: #a0aec0;
+		background: var(--surface);
+		color: var(--text-secondary);
 		padding: 2px 8px;
 		border-radius: 6px;
-		font-size: 0.7rem;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.65rem;
 		font-weight: 600;
-		backdrop-filter: blur(4px);
 	}
 
 	.countdown-text.soon {
-		background: rgba(245, 158, 11, 0.4);
-		color: #fbbf24;
+		background: var(--yellow);
+		color: var(--bg);
 	}
 
 	.released-badge {
 		position: absolute;
 		top: 8px;
 		right: 8px;
-		background: rgba(16, 185, 129, 0.25);
-		color: #34d399;
+		background: var(--green);
+		color: var(--bg);
 		padding: 2px 8px;
 		border-radius: 6px;
-		font-size: 0.7rem;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.65rem;
 		font-weight: 600;
 	}
 
@@ -198,29 +189,32 @@
 	}
 
 	.title {
+		font-family: var(--font-serif);
 		font-size: 0.95rem;
-		font-weight: 700;
+		font-weight: 600;
 		color: var(--text-primary);
 		margin: 0;
 		line-height: 1.3;
+		text-wrap: balance;
 	}
 
 	.author {
+		font-family: var(--font-serif);
 		font-size: 0.8rem;
 		color: var(--text-secondary);
 		margin: 0;
 	}
 
 	.narrator {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin: 0;
+		color: inherit;
 	}
 
-	.release-date {
-		font-size: 0.75rem;
+	.meta-line {
+		font-family: var(--font-mono, monospace);
+		font-size: 0.7rem;
 		color: var(--text-muted);
-		margin: 0.25rem 0 0;
+		margin: auto 0 0;
+		padding-top: 0.5rem;
 	}
 
 	.separator {
@@ -240,23 +234,25 @@
 	}
 
 	.tag {
-		font-size: 0.65rem;
+		font-family: var(--font-mono, monospace);
+		font-size: 0.6rem;
 		padding: 2px 8px;
 		border-radius: 4px;
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
-		color: var(--tag-color, #94a3b8);
+		background: color-mix(in srgb, var(--tag-color, var(--accent)) 15%, transparent);
+		color: var(--tag-color, var(--text-secondary));
 		font-weight: 600;
 		letter-spacing: 0.02em;
 	}
 
 	.series-tag {
-		--tag-color: #94a3b8;
-		background: rgba(148, 163, 184, 0.1);
+		--tag-color: var(--text-secondary);
+		background: color-mix(in srgb, var(--text-muted) 10%, transparent);
 	}
 
 	.description {
+		font-family: var(--font-serif);
 		font-size: 0.75rem;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		margin: 0.35rem 0 0;
 		line-height: 1.5;
 		display: -webkit-box;
