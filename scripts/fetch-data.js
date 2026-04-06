@@ -229,8 +229,11 @@ async function fetchYear(year) {
 	return books;
 }
 
+const MIN_BOOKS_CURRENT_YEAR = 50;
+const MIN_RATIO_VS_PREVIOUS = 0.5;
+
 async function main() {
-	const { mkdirSync, writeFileSync, existsSync } = await import('node:fs');
+	const { mkdirSync, writeFileSync, existsSync, readFileSync } = await import('node:fs');
 	const { join } = await import('node:path');
 
 	const outDir = join(import.meta.dirname, '..', 'static', 'data');
@@ -250,6 +253,31 @@ async function main() {
 
 		console.log(`Fetching ${year}...`);
 		const books = await fetchYear(year);
+
+		// Deploy guard: validate data volume before writing
+		if (year <= currentYear) {
+			if (books.length < MIN_BOOKS_CURRENT_YEAR) {
+				console.error(
+					`DEPLOY GUARD: Only ${books.length} books fetched for ${year} (minimum: ${MIN_BOOKS_CURRENT_YEAR}). ` +
+					`Aborting to prevent deploying incomplete data.`
+				);
+				process.exit(1);
+			}
+
+			if (existsSync(outPath)) {
+				const previousBooks = JSON.parse(readFileSync(outPath, 'utf-8'));
+				const previousCount = previousBooks.length;
+				if (previousCount > 0 && books.length < previousCount * MIN_RATIO_VS_PREVIOUS) {
+					console.error(
+						`DEPLOY GUARD: Book count for ${year} dropped from ${previousCount} to ${books.length} ` +
+						`(below ${MIN_RATIO_VS_PREVIOUS * 100}% threshold). ` +
+						`Aborting to prevent deploying incomplete data.`
+					);
+					process.exit(1);
+				}
+			}
+		}
+
 		writeFileSync(outPath, JSON.stringify(books));
 		console.log(`  ${books.length} books → ${outPath}`);
 	}
