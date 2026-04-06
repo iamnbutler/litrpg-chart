@@ -41,15 +41,15 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
+		{#if book.series}
+			<p class="series-line">{#if book.seriesNumber}Book {book.seriesNumber} &middot; {/if}<button class="link-btn" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>{book.series}</button></p>
+		{/if}
 		<p class="author">{#each book.author.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each} {#if book.narrator}<span class="narrator">with {#each book.narrator.split(', ') as name, i}{#if i > 0}, {/if}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}
 				<span class="tag" style="--tag-color: {subgenreColors[genre]}">{subgenreLabels[genre]}</span>
 			{/each}
-			{#if book.seriesNumber}
-				<button class="tag series-tag" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>Book {book.seriesNumber}{#if book.series} &middot; {book.series}{/if}</button>
-			{/if}
 		</div>
 
 		{#if book.description}
@@ -203,6 +203,13 @@
 		text-wrap: balance;
 	}
 
+	.series-line {
+		font-family: var(--font-mono, monospace);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
 	.author {
 		font-family: var(--font-serif);
 		font-size: 0.8rem;
@@ -262,12 +269,7 @@
 		letter-spacing: 0.02em;
 	}
 
-	.series-tag {
-		--tag-color: var(--text-secondary);
-		background: color-mix(in srgb, var(--text-muted) 10%, transparent);
-	}
-
-	.description {
+.description {
 		font-family: var(--font-serif);
 		font-size: 0.75rem;
 		color: var(--text-secondary);
