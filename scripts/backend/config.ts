@@ -29,8 +29,8 @@ export interface SubgenreRule {
 }
 
 export interface SubgenresConfig {
-	[subgenre: string]: SubgenreRule | string;
-	defaultSubgenre: string;
+	[subgenre: string]: SubgenreRule | string | null;
+	defaultSubgenre: string | null;
 }
 
 export interface ContentFiltersConfig {
@@ -184,12 +184,14 @@ function validateSubgenres(data: unknown): SubgenresConfig {
 	requireObject(data, 'subgenres');
 	const obj = data as Record<string, unknown>;
 
-	if (!obj.defaultSubgenre || typeof obj.defaultSubgenre !== 'string') {
-		throw new Error('Config validation error: "subgenres.defaultSubgenre" must be a non-empty string');
+	// defaultSubgenre can be a string or null (null means no default)
+	if (obj.defaultSubgenre !== null && typeof obj.defaultSubgenre !== 'string') {
+		throw new Error('Config validation error: "subgenres.defaultSubgenre" must be a string or null');
 	}
 
 	for (const [key, value] of Object.entries(obj)) {
 		if (key === 'defaultSubgenre') continue;
+		if (value === null) continue;
 		requireObject(value, `subgenres.${key}`);
 		const rule = value as Record<string, unknown>;
 		requireArray(rule.patterns, `subgenres.${key}.patterns`);

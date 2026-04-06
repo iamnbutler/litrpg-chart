@@ -3,6 +3,7 @@
  * Uses the connection from ../db.ts and writes to the schema from migrations/001_initial.sql.
  */
 import { getDb } from "../db.js";
+import { mergeBook, mergeAllSources, type SourceBlob } from "../matchers/merger.js";
 
 export interface BookRow {
   id: string; // ASIN
@@ -78,6 +79,285 @@ export function upsertBook(book: BookRow): boolean {
     return true; // new
   }
 }
+
+// ---------------------------------------------------------------------------
+// Book lookup helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch a full book row by ID, or undefined if not found.
+ */
+export function getBook(bookId: string): BookRow | undefined {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT b.id, b.title, b.subtitle, b.author, b.narrator,
+              s.title AS series_name, b.series_number,
+              b.release_date, b.cover_url, b.runtime_minutes,
+              b.rating, b.rating_count, b.description, b.url,
+              b.is_ai_narrated
+       FROM books b
+       LEFT JOIN series s ON s.id = b.series_id
+       WHERE b.id = ?`
+    )
+    .get(bookId) as Record<string, unknown> | undefined;
+
+  if (!row) return undefined;
+
+  return {
+    id: row.id as string,
+    title: row.title as string,
+    subtitle: (row.subtitle as string) ?? null,
+    author: (row.author as string) ?? null,
+    narrator: (row.narrator as string) ?? null,
+    series_name: (row.series_name as string) ?? null,
+    series_number: (row.series_number as number) ?? null,
+    release_date: (row.release_date as string) ?? null,
+    cover_url: (row.cover_url as string) ?? null,
+    runtime_minutes: (row.runtime_minutes as number) ?? null,
+    rating: (row.rating as number) ?? null,
+    rating_count: (row.rating_count as number) ?? null,
+    description: (row.description as string) ?? null,
+    url: (row.url as string) ?? null,
+    is_ai_narrated: Boolean(row.is_ai_narrated),
+  };
+}
+
+/**
+ * Get all source names that have data for a given book.
+ */
+export function getBookSourceNames(bookId: string): string[] {
+  const db = getDb();
+  const rows = db
+    .prepare("SELECT source FROM book_sources WHERE book_id = ?")
+    .all(bookId) as { source: string }[];
+  return rows.map((r) => r.source);
+}
+
+/**
+ * Get all source blobs for a given book (for re-merging).
+ */
+export function getBookSources(bookId: string): { source: string; raw_data: string }[] {
+  const db = getDb();
+  return db
+    .prepare("SELECT source, raw_data FROM book_sources WHERE book_id = ?")
+    .all(bookId) as { source: string; raw_data: string }[];
+}
+
+// ---------------------------------------------------------------------------
+// Merge-aware upsert
+// ---------------------------------------------------------------------------
+
+export interface MergeAndUpsertResult {
+  isNew: boolean;
+  updatedFields: string[];
+  needsReview: boolean;
+}
+
+/**
+ * Merge-aware upsert: fetches the existing book (if any), runs the field
+ * merge strategy to resolve conflicts, and writes the merged result back.
+ *
+ * Use this instead of plain upsertBook when ingesting data from a source
+ * that may conflict with data from other sources.
+ */
+export function mergeAndUpsertBook(
+  bookData: Partial<BookRow> & { id: string },
+  source: string,
+  matchConfidence = 1.0,
+): MergeAndUpsertResult {
+  const existing = getBook(bookData.id);
+
+  if (!existing) {
+    const newBook: BookRow = {
+      id: bookData.id,
+      title: bookData.title ?? "Untitled",
+      subtitle: bookData.subtitle ?? null,
+      author: bookData.author ?? null,
+      narrator: bookData.narrator ?? null,
+      series_name: bookData.series_name ?? null,
+      series_number: bookData.series_number ?? null,
+      release_date: bookData.release_date ?? null,
+      cover_url: bookData.cover_url ?? null,
+      runtime_minutes: bookData.runtime_minutes ?? null,
+      rating: bookData.rating ?? null,
+      rating_count: bookData.rating_count ?? null,
+      description: bookData.description ?? null,
+      url: bookData.url ?? null,
+      is_ai_narrated: bookData.is_ai_narrated ?? false,
+    };
+    upsertBook(newBook);
+    return { isNew: true, updatedFields: [], needsReview: matchConfidence < 0.9 };
+  }
+
+  const knownSources = getBookSourceNames(bookData.id);
+  const result = mergeBook(
+    {
+      existingBook: existing,
+      incomingData: bookData,
+      source,
+      matchConfidence,
+    },
+    knownSources,
+  );
+
+  if (result.updatedFields.length > 0) {
+    upsertBook(result.book);
+  }
+
+  return {
+    isNew: false,
+    updatedFields: result.updatedFields,
+    needsReview: result.needsReview,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Re-merge from stored sources
+// ---------------------------------------------------------------------------
+
+/**
+ * Re-merge a single book from all its stored source blobs.
+ * Used by the CORRECT pipeline stage to replay merges after
+ * source data or priorities change.
+ */
+export function remergeBook(bookId: string): string[] {
+  const existing = getBook(bookId);
+  if (!existing) return [];
+
+  const rawSources = getBookSources(bookId);
+  if (rawSources.length === 0) return [];
+
+  const blobs: SourceBlob[] = rawSources.map((rs) => ({
+    source: rs.source,
+    rawData: parseSourceBlob(rs.source, rs.raw_data),
+  }));
+
+  const base: BookRow = {
+    ...existing,
+    title: "Untitled",
+    subtitle: null,
+    author: null,
+    narrator: null,
+    series_name: null,
+    series_number: null,
+    release_date: null,
+    cover_url: null,
+    runtime_minutes: null,
+    rating: null,
+    rating_count: null,
+    description: null,
+    url: null,
+    is_ai_narrated: false,
+  };
+
+  const result = mergeAllSources(base, blobs);
+
+  const changed: string[] = [];
+  for (const field of result.updatedFields) {
+    const key = field as keyof BookRow;
+    if (existing[key] !== result.book[key]) {
+      changed.push(field);
+    }
+  }
+
+  if (changed.length > 0) {
+    upsertBook(result.book);
+  }
+
+  return changed;
+}
+
+/**
+ * Get IDs of all books that have data from more than one source.
+ */
+export function getMultiSourceBookIds(): string[] {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT book_id FROM book_sources
+       GROUP BY book_id
+       HAVING COUNT(DISTINCT source) > 1`
+    )
+    .all() as { book_id: string }[];
+  return rows.map((r) => r.book_id);
+}
+
+// ---------------------------------------------------------------------------
+// Source blob parsing (raw_data JSON -> Partial<BookRow>)
+// ---------------------------------------------------------------------------
+
+function parseSourceBlob(source: string, rawJson: string): Partial<BookRow> {
+  try {
+    const data = JSON.parse(rawJson);
+    if (source === "audible") return parseAudibleBlob(data);
+    if (source === "hardcover") return parseHardcoverBlob(data);
+    return data as Partial<BookRow>;
+  } catch {
+    return {};
+  }
+}
+
+function parseAudibleBlob(data: Record<string, unknown>): Partial<BookRow> {
+  const series = (data.series as { title: string; sequence?: string }[] | undefined)?.[0];
+  let seriesNumber: number | null = null;
+  if (series?.sequence) {
+    const num = parseFloat(series.sequence);
+    if (!isNaN(num)) seriesNumber = num;
+  }
+
+  const authors = data.authors as { name: string }[] | undefined;
+  const narrators = data.narrators as { name: string }[] | undefined;
+  const rating = data.rating as {
+    overall_distribution?: { average_rating?: number; num_ratings?: number };
+  } | undefined;
+  const images = data.product_images as Record<string, string> | undefined;
+  const summary = data.merchandising_summary as string | undefined;
+
+  return {
+    title: (data.title as string) ?? undefined,
+    subtitle: (data.subtitle as string) ?? undefined,
+    author: authors?.map((a) => a.name).join(", ") || undefined,
+    narrator: narrators?.map((n) => n.name).join(", ") || undefined,
+    series_name: series?.title ?? undefined,
+    series_number: seriesNumber ?? undefined,
+    release_date: (data.release_date as string) ?? undefined,
+    cover_url: images?.["500"] ?? undefined,
+    runtime_minutes: (data.runtime_length_min as number) ?? undefined,
+    rating: rating?.overall_distribution?.average_rating ?? undefined,
+    rating_count: rating?.overall_distribution?.num_ratings ?? undefined,
+    description: summary ? stripHtmlSimple(summary) : undefined,
+    url: data.asin ? `https://www.audible.com/pd/${data.asin}` : undefined,
+  };
+}
+
+function parseHardcoverBlob(data: Record<string, unknown>): Partial<BookRow> {
+  const contributions = data.contributions as { author: { name: string } }[] | undefined;
+  return {
+    title: (data.title as string) ?? undefined,
+    author: contributions?.map((c) => c.author.name).join(", ") || undefined,
+    rating: (data.rating as number) ?? undefined,
+    rating_count: (data.ratings_count as number) ?? undefined,
+  };
+}
+
+function stripHtmlSimple(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#xa0;/g, " ")
+    .replace(/&#39;/g, "'")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+// ---------------------------------------------------------------------------
+// Book source tracking
+// ---------------------------------------------------------------------------
 
 export function upsertBookSource(
   bookId: string,
