@@ -40,7 +40,7 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(book.author); }}>{book.author}</button>{:else}{book.author}{/if} {#if book.narrator}<span class="narrator">with {#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(book.narrator!); }}>{book.narrator}</button>{:else}{book.narrator}{/if}</span>{/if}</p>
+		<p class="author">{#each book.author.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each} {#if book.narrator}<span class="narrator">with {#each book.narrator.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}

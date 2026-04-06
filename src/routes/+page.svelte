@@ -82,8 +82,9 @@
 				.filter((b: Book) => {
 					if (activeFilter!.type === 'author') {
 						const name = activeFilter!.value.toLowerCase();
-						return b.author?.toLowerCase().includes(name)
-							|| b.narrator?.toLowerCase().includes(name);
+						const authors = b.author?.toLowerCase().split(',').map(s => s.trim()) ?? [];
+						const narrators = b.narrator?.toLowerCase().split(',').map(s => s.trim()) ?? [];
+						return authors.some(a => a === name) || narrators.some(n => n === name);
 					}
 					if (activeFilter!.type === 'series') {
 						return b.series === activeFilter!.value;
