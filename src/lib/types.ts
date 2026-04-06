@@ -1,7 +1,6 @@
 export type Subgenre =
 	| 'litrpg'
 	| 'cultivation'
-	| 'progression'
 	| 'dungeon'
 	| 'isekai'
 	| 'tower-climbing'
@@ -36,7 +35,6 @@ export type SortMode = 'relevance' | 'date';
 export const subgenreLabels: Record<Subgenre, string> = {
 	litrpg: '⚔️ LitRPG',
 	cultivation: '🌿 Cultivation',
-	progression: '🏃 Progression',
 	dungeon: '💀 Dungeon Core',
 	isekai: '🚚 Isekai',
 	'tower-climbing': '🗼 Tower Climbing',
@@ -52,7 +50,6 @@ export const subgenreLabels: Record<Subgenre, string> = {
 export const subgenreColors: Record<Subgenre, string> = {
 	litrpg: 'var(--blue-bright, #83a598)',
 	cultivation: 'var(--green-bright, #b8bb26)',
-	progression: 'var(--yellow-bright, #fabd2f)',
 	dungeon: 'var(--red-bright, #fb4934)',
 	isekai: 'var(--purple-bright, #d3869b)',
 	'tower-climbing': 'var(--aqua-bright, #8ec07c)',

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Book, Quarter, Subgenre, SortMode, ActiveFilter } from '$lib/types';
-	import { fetchAllBooks } from '$lib/api';
+	import { fetchAllBooks, fetchMeta } from '$lib/api';
 	import BookCard from '$lib/components/BookCard.svelte';
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
 	import GenreFilter from '$lib/components/GenreFilter.svelte';
@@ -18,7 +18,7 @@
 
 	let activeQuarter: Quarter = $state(getCurrentQuarter());
 	let activeYear: number = $state(new Date().getFullYear());
-	let activeGenres: Set<Subgenre> = $state(new Set(['litrpg', 'cultivation']));
+	let activeGenres: Set<Subgenre> = $state(new Set());
 	let sortMode: SortMode = $state('relevance');
 	let seriesOnly: boolean = $state(false);
 	let longRunningOnly: boolean = $state(false);
@@ -26,6 +26,7 @@
 
 	let booksByYear: Record<number, Book[]> = $state({});
 	let loadingYear: number | null = $state(null);
+	let availableYears: number[] = $state([]);
 
 	async function fetchYear(year: number) {
 		if (booksByYear[year]) return;
@@ -41,7 +42,14 @@
 		}
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		const meta = await fetchMeta();
+		if (meta) {
+			availableYears = Object.keys(meta.years)
+				.map(Number)
+				.filter((y) => meta.years[String(y)].exportedBooks > 0)
+				.sort((a, b) => a - b);
+		}
 		fetchYear(activeYear);
 	});
 
@@ -51,6 +59,10 @@
 			activeYear = year;
 			fetchYear(year);
 		}
+	}
+
+	function handleAllToggle() {
+		activeGenres = new Set();
 	}
 
 	function handleGenreToggle(g: Subgenre) {
@@ -199,6 +211,7 @@
 				<SeasonNav
 					{activeQuarter}
 					{activeYear}
+					{availableYears}
 					onSeasonChange={handleSeasonChange}
 				/>
 			</div>
@@ -211,6 +224,7 @@
 				{activeGenres}
 				counts={genreCounts}
 				onGenreToggle={handleGenreToggle}
+				onAllToggle={handleAllToggle}
 			/>
 			<div class="toolbar-right">
 				<span class="count">

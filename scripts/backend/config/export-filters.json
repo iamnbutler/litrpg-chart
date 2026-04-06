@@ -1,4 +1,8 @@
 {
+  "authorBlocklist": [
+    "Bruce Sentar",
+    "Logan Jacobs"
+  ],
   "contentFilter": {
     "enabled": true,
     "patterns": [

@@ -87,8 +87,6 @@ function guessSubgenres(product: AudibleProduct): string[] {
   if (/litrpg|lit[\s-]?rpg|gamelit/.test(text)) subgenres.push("litrpg");
   if (/cultivation|cultivator|qi |dao |xianxia|wuxia/.test(text))
     subgenres.push("cultivation");
-  if (/progression\s*fantasy|level\s*up|skill\s*tree|class\s*system/.test(text))
-    subgenres.push("progression");
   if (/dungeon\s*core|dungeon\s*crawl/.test(text))
     subgenres.push("dungeon");
   if (
@@ -97,7 +95,6 @@ function guessSubgenres(product: AudibleProduct): string[] {
     )
   )
     subgenres.push("isekai");
-  if (subgenres.length === 0) subgenres.push("progression");
   return subgenres;
 }
 
@@ -233,15 +230,18 @@ export class AudibleFetcher implements Fetcher {
   private processProduct(
     product: AudibleProduct,
     year: number,
-    seen: Set<string>
+    seen: Set<string>,
+    options?: { skipYearFilter?: boolean }
   ): { isNew: boolean } | null {
     if (seen.has(product.asin)) return null;
     // English only
     if (product.language !== "english") return null;
-    // Year filter
     if (!product.release_date) return null;
-    const releaseYear = new Date(product.release_date).getFullYear();
-    if (releaseYear !== year) return null;
+    // Year filter (skipped for series searches — store in actual release year)
+    if (!options?.skipYearFilter) {
+      const releaseYear = new Date(product.release_date).getFullYear();
+      if (releaseYear !== year) return null;
+    }
     // No content filtering at fetch time — store everything
 
     seen.add(product.asin);
@@ -419,7 +419,7 @@ export class AudibleFetcher implements Fetcher {
           }
 
           for (const p of products) {
-            const result = this.processProduct(p, year, seen);
+            const result = this.processProduct(p, year, seen, { skipYearFilter: true });
             if (result) {
               booksFound++;
               if (result.isNew) booksNew++;

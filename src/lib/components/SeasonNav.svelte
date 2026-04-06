@@ -4,10 +4,12 @@
 	let {
 		activeQuarter,
 		activeYear,
+		availableYears = [],
 		onSeasonChange
 	}: {
 		activeQuarter: Quarter;
 		activeYear: number;
+		availableYears?: number[];
 		onSeasonChange: (q: Quarter, year: number) => void;
 	} = $props();
 
@@ -19,7 +21,8 @@
 	];
 
 	const currentYear = new Date().getFullYear();
-	const yearOptions = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+	const fallbackYears = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
+	const yearOptions = $derived(availableYears.length > 0 ? availableYears : fallbackYears);
 </script>
 
 <div class="season-nav">

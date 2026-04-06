@@ -15,6 +15,7 @@ import { getDb, closeDb } from "../db.js";
 // ---------------------------------------------------------------------------
 
 interface ExportFilters {
+  authorBlocklist: string[];
   contentFilter: {
     enabled: boolean;
     patterns: string[];
@@ -179,6 +180,18 @@ function applyFilters(books: BookRow[], filters: ExportFilters): { filtered: Boo
   let result = books;
   const stats: FilterStats = { content: 0, aiNarration: 0, quality: 0, subgenre: 0, contentBreakdown: {} };
 
+  // Author blocklist
+  if (filters.authorBlocklist?.length > 0) {
+    const blocked = new Set(filters.authorBlocklist.map((a) => a.toLowerCase()));
+    const before = result.length;
+    result = result.filter((b) => {
+      const authors = (b.author ?? "").toLowerCase().split(",").map((s) => s.trim());
+      return !authors.some((a) => blocked.has(a));
+    });
+    stats.content += before - result.length;
+    stats.contentBreakdown["author-blocklist"] = before - result.length;
+  }
+
   // Content filter (harem/erotic/romance)
   if (filters.contentFilter.enabled && filters.contentFilter.patterns.length > 0) {
     const compiled = filters.contentFilter.patterns.map((p) => ({
@@ -223,14 +236,13 @@ function applyFilters(books: BookRow[], filters: ExportFilters): { filtered: Boo
     stats.quality = before - result.length;
   }
 
-  // Subgenre filter: exclude books with no subgenre or only "progression" fallback
+  // Subgenre filter: exclude books with no subgenres
   if (filters.subgenreFilter.enabled && filters.subgenreFilter.excludeProgressionOnlyFallback) {
     const before = result.length;
     result = result.filter((b) => {
       if (!b.subgenres) return false;
-      const subs = b.subgenres.split(",");
-      if (subs.length === 1 && subs[0] === "progression") return false;
-      return true;
+      const subs = b.subgenres.split(",").filter(Boolean);
+      return subs.length > 0;
     });
     stats.subgenre = before - result.length;
   }

@@ -5,21 +5,38 @@
 	let {
 		activeGenres,
 		counts = {},
-		onGenreToggle
+		onGenreToggle,
+		onAllToggle
 	}: {
 		activeGenres: Set<Subgenre>;
 		counts?: Record<string, number>;
 		onGenreToggle: (g: Subgenre) => void;
+		onAllToggle: () => void;
 	} = $props();
 
-	const genres = Object.entries(subgenreLabels) as [Subgenre, string][];
+	const isAll = $derived(activeGenres.size === 0);
+
+	const genres = $derived(
+		(Object.entries(subgenreLabels) as [Subgenre, string][]).filter(([key]) => (counts[key] ?? 0) > 0)
+	);
+
+	const totalCount = $derived(
+		Object.values(counts).reduce((sum, n) => sum + n, 0)
+	);
 </script>
 
 <div class="genres">
+	<button
+		class="genre-btn all-btn"
+		class:active={isAll}
+		onclick={onAllToggle}
+	>
+		All{#if totalCount > 0}<span class="genre-count">&nbsp;{totalCount}</span>{/if}
+	</button>
 	{#each genres as [key, label]}
 		<button
 			class="genre-btn"
-			class:active={activeGenres.has(key)}
+			class:active={isAll || activeGenres.has(key)}
 			style="--genre-color: {subgenreColors[key]}"
 			onclick={() => onGenreToggle(key)}
 		>
@@ -57,6 +74,10 @@
 		color: var(--genre-color);
 		font-weight: 700;
 		filter: grayscale(0);
+	}
+
+	.all-btn {
+		--genre-color: var(--text-primary);
 	}
 
 	.genre-count {

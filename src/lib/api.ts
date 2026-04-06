@@ -10,3 +10,20 @@ export async function fetchAllBooks(year: number): Promise<Book[]> {
 	if (!res.ok) return [];
 	return res.json();
 }
+
+interface MetaYear {
+	totalBooks: number;
+	exportedBooks: number;
+}
+
+interface Meta {
+	lastUpdated: string;
+	years: Record<string, MetaYear>;
+	sources: string[];
+}
+
+export async function fetchMeta(): Promise<Meta | null> {
+	const res = await fetch(`${base}/data/meta.json`);
+	if (!res.ok) return null;
+	return res.json();
+}
