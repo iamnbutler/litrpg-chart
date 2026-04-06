@@ -1,0 +1,14 @@
+{
+	"excludePatterns": [
+		"harem",
+		"haremlit",
+		"reverse\\s*harem",
+		"men'?s\\s*adventure",
+		"smut",
+		"erotic",
+		"\\bspicy\\b",
+		"adult\\s*fantasy\\s*romance",
+		"intimate\\s*scene"
+	],
+	"fieldsToCheck": ["title", "subtitle", "merchandising_summary"]
+}
