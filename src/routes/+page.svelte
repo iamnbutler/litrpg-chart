@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Book, Quarter, Subgenre, SortMode } from '$lib/types';
+	import type { Book, Quarter, Subgenre, SortMode, ActiveFilter } from '$lib/types';
 	import { fetchAllBooks } from '$lib/api';
 	import BookCard from '$lib/components/BookCard.svelte';
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
@@ -21,6 +21,7 @@
 	let sortMode: SortMode = $state('relevance');
 	let seriesOnly: boolean = $state(false);
 	let longRunningOnly: boolean = $state(false);
+	let activeFilter: ActiveFilter | null = $state(null);
 
 	let booksByYear: Record<number, Book[]> = $state({});
 	let loadingYear: number | null = $state(null);
@@ -71,7 +72,33 @@
 	const currentBooks = $derived(booksByYear[activeYear] ?? []);
 	const isLoading = $derived(loadingYear === activeYear);
 
+	/** All books across loaded years (for author/series views) */
+	const allLoadedBooks = $derived(Object.values(booksByYear).flat());
+
 	const filteredBooks = $derived.by(() => {
+		// When an author/series filter is active, search all loaded years
+		if (activeFilter) {
+			return allLoadedBooks
+				.filter((b: Book) => {
+					if (activeFilter!.type === 'author') {
+						const name = activeFilter!.value.toLowerCase();
+						return b.author?.toLowerCase().includes(name)
+							|| b.narrator?.toLowerCase().includes(name);
+					}
+					if (activeFilter!.type === 'series') {
+						return b.series === activeFilter!.value;
+					}
+					return true;
+				})
+				.sort((a: Book, b: Book) => {
+					// Sort series by book number, authors by relevance
+					if (activeFilter!.type === 'series' && a.seriesNumber != null && b.seriesNumber != null) {
+						return a.seriesNumber - b.seriesNumber;
+					}
+					return b.relevanceScore - a.relevanceScore;
+				});
+		}
+
 		const monthIndices = quarterMonthIndices[activeQuarter];
 		return currentBooks
 			.filter((b: Book) => {
@@ -113,6 +140,27 @@
 	});
 
 	const totalCount = $derived(filteredBooks.length);
+
+	function handleAuthorClick(name: string) {
+		activeFilter = { type: 'author', value: name };
+		// Load adjacent years for fuller results
+		const y = new Date().getFullYear();
+		fetchYear(y - 1);
+		fetchYear(y);
+		fetchYear(y + 1);
+	}
+
+	function handleSeriesClick(series: string) {
+		activeFilter = { type: 'series', value: series };
+		const y = new Date().getFullYear();
+		fetchYear(y - 1);
+		fetchYear(y);
+		fetchYear(y + 1);
+	}
+
+	function clearFilter() {
+		activeFilter = null;
+	}
 
 	/** Count books per genre (within current quarter, ignoring genre filter) */
 	const genreCounts = $derived.by(() => {
@@ -181,19 +229,36 @@
 			</div>
 		</div>
 
+		{#if activeFilter}
+			<div class="active-filter-bar">
+				<span class="filter-label">
+					{#if activeFilter.type === 'author'}
+						Books by <strong>{activeFilter.value}</strong>
+					{:else}
+						<strong>{activeFilter.value}</strong> series
+					{/if}
+				</span>
+				<button class="clear-filter" onclick={clearFilter}>&times;</button>
+			</div>
+		{/if}
+
 		{#if isLoading}
 			<div class="empty">
 				<p>Loading {activeYear} audiobooks...</p>
 			</div>
-		{:else if groupedByMonth.length === 0}
+		{:else if filteredBooks.length === 0}
 			<div class="empty">
-				<p>No audiobooks found for this season.</p>
-				<p class="empty-sub">Try a different season or clear your filters.</p>
+				<p>No audiobooks found{activeFilter ? ` for "${activeFilter.value}"` : ' for this season'}.</p>
+				{#if activeFilter}
+					<button class="clear-link" onclick={clearFilter}>Clear filter</button>
+				{:else}
+					<p class="empty-sub">Try a different season or clear your filters.</p>
+				{/if}
 			</div>
-		{:else if sortMode === 'relevance'}
+		{:else if activeFilter || sortMode === 'relevance'}
 			<div class="book-grid">
 				{#each filteredBooks as book (book.id)}
-					<BookCard {book} />
+					<BookCard {book} onAuthorClick={handleAuthorClick} onSeriesClick={handleSeriesClick} />
 				{/each}
 			</div>
 		{:else}
@@ -202,7 +267,7 @@
 					<h2 class="month-heading">{group.month}</h2>
 					<div class="book-grid">
 						{#each group.books as book (book.id)}
-							<BookCard {book} />
+							<BookCard {book} onAuthorClick={handleAuthorClick} onSeriesClick={handleSeriesClick} />
 						{/each}
 					</div>
 				</section>
@@ -342,6 +407,49 @@
 		}
 	}
 
+
+	.active-filter-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5rem 0.75rem;
+		background: color-mix(in srgb, var(--accent) 10%, transparent);
+		border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+		border-radius: 8px;
+		margin-bottom: 1rem;
+	}
+
+	.filter-label {
+		font-family: var(--font-serif);
+		font-size: 0.85rem;
+		color: var(--text-primary);
+	}
+
+	.clear-filter {
+		all: unset;
+		cursor: pointer;
+		font-size: 1.2rem;
+		color: var(--text-muted);
+		padding: 0 0.25rem;
+		line-height: 1;
+	}
+
+	.clear-filter:hover {
+		color: var(--text-primary);
+	}
+
+	.clear-link {
+		all: unset;
+		cursor: pointer;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		color: var(--accent);
+		margin-top: 0.5rem;
+	}
+
+	.clear-link:hover {
+		text-decoration: underline;
+	}
 
 	.empty {
 		text-align: center;

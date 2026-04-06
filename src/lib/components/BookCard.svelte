@@ -2,7 +2,11 @@
 	import type { Book } from '$lib/types';
 	import { subgenreLabels, subgenreColors } from '$lib/types';
 
-	let { book }: { book: Book } = $props();
+	let { book, onAuthorClick, onSeriesClick }: {
+		book: Book;
+		onAuthorClick?: (name: string) => void;
+		onSeriesClick?: (series: string) => void;
+	} = $props();
 
 	const released = $derived(new Date(book.releaseDate) <= new Date());
 	const days = $derived(Math.ceil((new Date(book.releaseDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
@@ -36,14 +40,14 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{book.author} {#if book.narrator}<span class="narrator">with {book.narrator}</span>{/if}</p>
+		<p class="author">{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(book.author); }}>{book.author}</button>{:else}{book.author}{/if} {#if book.narrator}<span class="narrator">with {#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(book.narrator!); }}>{book.narrator}</button>{:else}{book.narrator}{/if}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}
 				<span class="tag" style="--tag-color: {subgenreColors[genre]}">{subgenreLabels[genre]}</span>
 			{/each}
 			{#if book.seriesNumber}
-				<span class="tag series-tag">Book {book.seriesNumber}</span>
+				<button class="tag series-tag" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>Book {book.seriesNumber}{#if book.series} &middot; {book.series}{/if}</button>
 			{/if}
 		</div>
 
@@ -207,6 +211,19 @@
 
 	.narrator {
 		color: inherit;
+	}
+
+	.link-btn {
+		all: unset;
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-underline-offset: 2px;
+		transition: text-decoration-color 0.15s;
+	}
+
+	.link-btn:hover {
+		text-decoration-color: currentColor;
 	}
 
 	.meta-line {
