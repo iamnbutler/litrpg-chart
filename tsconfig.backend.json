@@ -13,5 +13,6 @@
 		"rootDir": "scripts/backend",
 		"declaration": true
 	},
-	"include": ["scripts/backend/**/*.ts"]
+	"include": ["scripts/backend/**/*.ts"],
+	"exclude": ["scripts/backend/**/*.test.ts"]
 }
