@@ -221,7 +221,12 @@
 	}
 
 	.link-btn {
-		all: unset;
+		background: none;
+		border: none;
+		padding: 0;
+		margin: 0;
+		font: inherit;
+		color: inherit;
 		cursor: pointer;
 		text-decoration: underline;
 		text-decoration-color: transparent;
