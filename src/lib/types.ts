@@ -37,3 +37,8 @@ export const subgenreColors: Record<Subgenre, string> = {
 };
 
 export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
+
+export interface ActiveFilter {
+	type: 'author' | 'narrator' | 'series';
+	value: string;
+}
