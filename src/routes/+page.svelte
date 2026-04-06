@@ -5,6 +5,7 @@
 	import BookCard from '$lib/components/BookCard.svelte';
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
 	import GenreFilter from '$lib/components/GenreFilter.svelte';
+	import FilterPopover from '$lib/components/FilterPopover.svelte';
 
 	function getCurrentQuarter(): Quarter {
 		const month = new Date().getMonth();
@@ -18,6 +19,8 @@
 	let activeYear: number = $state(new Date().getFullYear());
 	let activeGenres: Set<Subgenre> = $state(new Set(['litrpg', 'cultivation']));
 	let sortMode: SortMode = $state('relevance');
+	let seriesOnly: boolean = $state(false);
+	let longRunningOnly: boolean = $state(false);
 
 	let booksByYear: Record<number, Book[]> = $state({});
 	let loadingYear: number | null = $state(null);
@@ -78,8 +81,10 @@
 				if (year !== activeYear) return false;
 				if (!monthIndices.includes(month)) return false;
 				if (activeGenres.size > 0) {
-					return b.subgenres.some((g: Subgenre) => activeGenres.has(g));
+					if (!b.subgenres.some((g: Subgenre) => activeGenres.has(g))) return false;
 				}
+				if (seriesOnly && !b.series) return false;
+				if (longRunningOnly && (b.seriesNumber == null || b.seriesNumber < 8)) return false;
 				return true;
 			})
 			.sort((a: Book, b: Book) =>
@@ -148,6 +153,12 @@
 						{totalCount} title{totalCount !== 1 ? 's' : ''}
 					{/if}
 				</span>
+				<FilterPopover
+					{seriesOnly}
+					{longRunningOnly}
+					onSeriesOnlyChange={(v) => seriesOnly = v}
+					onLongRunningChange={(v) => longRunningOnly = v}
+				/>
 			</div>
 		</div>
 
