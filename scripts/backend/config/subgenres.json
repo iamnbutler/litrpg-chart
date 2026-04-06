@@ -1,0 +1,30 @@
+{
+	"litrpg": {
+		"patterns": ["litrpg", "lit[\\s-]?rpg", "gamelit"],
+		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
+	},
+	"cultivation": {
+		"patterns": ["cultivation", "cultivator", "qi ", "dao ", "xianxia", "wuxia"],
+		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
+	},
+	"progression": {
+		"patterns": ["progression\\s*fantasy", "level\\s*up", "skill\\s*tree", "class\\s*system"],
+		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
+	},
+	"dungeon": {
+		"patterns": ["dungeon\\s*core", "dungeon\\s*crawl"],
+		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
+	},
+	"isekai": {
+		"patterns": [
+			"isekai",
+			"transported",
+			"reincarnated",
+			"reborn\\s*(in|as|into)",
+			"summoned\\s*(to|into)",
+			"another\\s*world"
+		],
+		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
+	},
+	"defaultSubgenre": "progression"
+}
