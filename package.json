@@ -5,7 +5,6 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"fetch-data": "node scripts/fetch-data.js",
 		"pipeline": "tsx scripts/backend/index.ts",
 		"pipeline:fetch": "tsx scripts/backend/index.ts fetch",
 		"pipeline:export": "tsx scripts/backend/index.ts export",
