@@ -21,11 +21,11 @@ export interface Book {
 export type SortMode = 'relevance' | 'date';
 
 export const subgenreLabels: Record<Subgenre, string> = {
-	litrpg: 'LitRPG',
-	cultivation: 'Cultivation',
-	progression: 'Progression',
-	dungeon: 'Dungeon Core',
-	isekai: 'Isekai'
+	litrpg: '⚔️ LitRPG',
+	cultivation: '🌿 Cultivation',
+	progression: '🏃 Progression',
+	dungeon: '💀 Dungeon Core',
+	isekai: '🚚 Isekai'
 };
 
 export const subgenreColors: Record<Subgenre, string> = {

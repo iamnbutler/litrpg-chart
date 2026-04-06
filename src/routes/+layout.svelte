@@ -11,6 +11,10 @@
 		padding: 0;
 	}
 
+	:global(html) {
+		overscroll-behavior: none;
+	}
+
 	:global(body) {
 		font-family: 'Lora', Georgia, 'Times New Roman', serif;
 		-webkit-font-smoothing: antialiased;

@@ -31,32 +31,32 @@
 <style>
 	.genres {
 		display: flex;
-		gap: 0.4rem;
+		gap: 0.6rem;
 		flex-wrap: wrap;
 	}
 
 	.genre-btn {
-		padding: 0.35rem 0.85rem;
-		border: 1px solid var(--border);
+		padding: 0;
+		border: none;
 		background: transparent;
 		color: var(--text-muted);
-		border-radius: 20px;
 		cursor: pointer;
 		font-family: var(--font-mono);
-		font-size: 0.7rem;
+		font-size: 0.75rem;
 		font-weight: 500;
-		transition: all 0.15s ease;
+		transition: color 0.15s ease, filter 0.15s ease;
+		filter: grayscale(1);
 	}
 
 	.genre-btn:hover {
-		border-color: var(--genre-color);
-		color: var(--genre-color);
+		color: var(--text-secondary);
+		filter: grayscale(0.5);
 	}
 
 	.genre-btn.active {
-		background: color-mix(in srgb, var(--genre-color) 15%, transparent);
-		border-color: var(--genre-color);
 		color: var(--genre-color);
+		font-weight: 700;
+		filter: grayscale(0);
 	}
 
 	.genre-count {

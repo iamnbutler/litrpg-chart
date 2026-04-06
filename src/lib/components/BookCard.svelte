@@ -34,31 +34,6 @@
 	target="_blank"
 	rel="noopener noreferrer"
 >
-	<div class="cover">
-		{#if book.coverUrl}
-			<img src={book.coverUrl} alt={book.title} loading="lazy" />
-		{:else}
-			<div class="cover-placeholder" style="--hue: {hue}">
-				<span class="cover-number">#{book.seriesNumber ?? '?'}</span>
-				<span class="cover-series">{book.series}</span>
-			</div>
-		{/if}
-
-		{#if !released}
-			<div class="countdown">
-				{#if days <= 0}
-					<span class="countdown-text">Out now</span>
-				{:else if days <= 7}
-					<span class="countdown-text soon">{days}d</span>
-				{:else}
-					<span class="countdown-text">{days}d</span>
-				{/if}
-			</div>
-		{:else}
-			<div class="released-badge">Released</div>
-		{/if}
-	</div>
-
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
 		<p class="author">{book.author} {#if book.narrator}<span class="narrator">with {book.narrator}</span>{/if}</p>
@@ -84,12 +59,37 @@
 			{/if}
 		</p>
 	</div>
+
+	<div class="cover">
+		{#if book.coverUrl}
+			<img src={book.coverUrl} alt={book.title} loading="lazy" />
+		{:else}
+			<div class="cover-placeholder" style="--hue: {hue}">
+				<span class="cover-number">#{book.seriesNumber ?? '?'}</span>
+				<span class="cover-series">{book.series}</span>
+			</div>
+		{/if}
+
+		{#if !released}
+			<div class="countdown">
+				{#if days <= 0}
+					<span class="countdown-text">Out now</span>
+				{:else if days <= 7}
+					<span class="countdown-text soon">{days}d</span>
+				{:else}
+					<span class="countdown-text">{days}d</span>
+				{/if}
+			</div>
+		{:else}
+			<div class="released-badge">Released</div>
+		{/if}
+	</div>
 </a>
 
 <style>
 	.book-card {
 		display: grid;
-		grid-template-columns: 130px 1fr;
+		grid-template-columns: 1fr 160px;
 		gap: 0;
 		background: var(--card-bg);
 		border-radius: 12px;
@@ -101,8 +101,8 @@
 
 	.cover {
 		position: relative;
-		width: 130px;
-		min-height: 195px;
+		width: 160px;
+		min-height: 220px;
 		overflow: hidden;
 		background: var(--surface);
 	}
@@ -253,7 +253,7 @@
 		font-family: var(--font-serif);
 		font-size: 0.75rem;
 		color: var(--text-secondary);
-		margin: 0.35rem 0 0;
+		margin: 0.7rem 0 0;
 		line-height: 1.5;
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
@@ -263,7 +263,7 @@
 
 	@media (max-width: 600px) {
 		.book-card {
-			grid-template-columns: 100px 1fr;
+			grid-template-columns: 1fr 100px;
 		}
 
 		.cover {
