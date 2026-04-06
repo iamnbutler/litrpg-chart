@@ -10,7 +10,7 @@
   },
   "aiNarrationFilter": {
     "enabled": true,
-    "qualityScoreOverride": 0.8
+    "qualityScoreOverride": 99
   },
   "subgenreFilter": {
     "enabled": true,

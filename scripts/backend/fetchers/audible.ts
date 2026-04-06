@@ -94,6 +94,15 @@ function guessSubgenres(product: AudibleProduct): string[] {
   return subgenres;
 }
 
+/** Detect AI narration: "Virtual Voice" narrator or no narrator at all. */
+function isAiNarrated(p: AudibleProduct): boolean {
+  const narrators = p.narrators ?? [];
+  if (narrators.length === 0) return true;
+  return narrators.some((n) =>
+    /virtual\s*voice/i.test(n.name)
+  );
+}
+
 function productToBookRow(p: AudibleProduct): BookRow {
   const series = p.series?.[0];
   let seriesNumber: number | null = null;
@@ -125,6 +134,7 @@ function productToBookRow(p: AudibleProduct): BookRow {
     rating_count: rating?.num_ratings ?? null,
     description: p.merchandising_summary ? stripHtml(p.merchandising_summary) : null,
     url: `https://www.audible.com/pd/${p.asin}`,
+    is_ai_narrated: isAiNarrated(p),
   };
 }
 
