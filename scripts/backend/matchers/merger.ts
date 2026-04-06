@@ -177,7 +177,7 @@ export function mergeBook(options: MergeOptions, knownSources?: string[]): Merge
 
   return {
     updatedFields,
-    book: merged as BookRow,
+    book: merged as unknown as BookRow,
     needsReview,
   };
 }
