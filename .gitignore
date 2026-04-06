@@ -32,5 +32,5 @@ vite.config.ts.timestamp-*
 /data/*.db-journal
 /data/*.db-wal
 
-# Generated static data (built by pipeline)
-/static/data/*.json
+# Generated static data (built by pipeline, but committed for backfill data)
+# /static/data/*.json
