@@ -355,6 +355,42 @@ function stripHtmlSimple(html: string): string {
     .trim();
 }
 
+/**
+ * Fetch all book rows from the database.
+ */
+export function getAllBooks(): BookRow[] {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT b.id, b.title, b.subtitle, b.author, b.narrator,
+              s.title AS series_name, b.series_number,
+              b.release_date, b.cover_url, b.runtime_minutes,
+              b.rating, b.rating_count, b.description, b.url,
+              b.is_ai_narrated
+       FROM books b
+       LEFT JOIN series s ON s.id = b.series_id`
+    )
+    .all() as Record<string, unknown>[];
+
+  return rows.map((row) => ({
+    id: row.id as string,
+    title: row.title as string,
+    subtitle: (row.subtitle as string) ?? null,
+    author: (row.author as string) ?? null,
+    narrator: (row.narrator as string) ?? null,
+    series_name: (row.series_name as string) ?? null,
+    series_number: (row.series_number as number) ?? null,
+    release_date: (row.release_date as string) ?? null,
+    cover_url: (row.cover_url as string) ?? null,
+    runtime_minutes: (row.runtime_minutes as number) ?? null,
+    rating: (row.rating as number) ?? null,
+    rating_count: (row.rating_count as number) ?? null,
+    description: (row.description as string) ?? null,
+    url: (row.url as string) ?? null,
+    is_ai_narrated: Boolean(row.is_ai_narrated),
+  }));
+}
+
 // ---------------------------------------------------------------------------
 // Book source tracking
 // ---------------------------------------------------------------------------
@@ -382,6 +418,20 @@ export function setBookSubgenres(bookId: string, subgenres: string[]): void {
   );
   for (const sg of subgenres) {
     insert.run(bookId, sg);
+  }
+}
+
+export function setBookSubgenresWithMeta(
+  bookId: string,
+  subgenres: { subgenre: string; confidence: number; source: string }[]
+): void {
+  const db = getDb();
+  db.prepare("DELETE FROM book_subgenres WHERE book_id = ?").run(bookId);
+  const insert = db.prepare(
+    "INSERT INTO book_subgenres (book_id, subgenre, confidence, source) VALUES (?, ?, ?, ?)"
+  );
+  for (const sg of subgenres) {
+    insert.run(bookId, sg.subgenre, sg.confidence, sg.source);
   }
 }
 

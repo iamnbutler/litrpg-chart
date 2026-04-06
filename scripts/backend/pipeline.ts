@@ -20,7 +20,8 @@ import { AudibleFetcher } from "./fetchers/audible.js";
 import { HardcoverFetcher } from "./fetchers/hardcover.js";
 import { RoyalRoadScraper } from "./fetchers/royalroad.js";
 import { closeDb } from "./db.js";
-import { getMultiSourceBookIds, remergeBook } from "./db/index.js";
+import { getMultiSourceBookIds, remergeBook, getAllBooks, setBookSubgenresWithMeta } from "./db/index.js";
+import { classifyBook } from "./classifiers/subgenre.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -46,6 +47,12 @@ export interface PipelineResult {
   totalDuration: number;
   booksProcessed: number;
   booksExported: number;
+}
+
+export interface BackfillOptions {
+  years: number[];
+  delayBetweenYears?: number;
+  dryRun?: boolean;
 }
 
 type StageFn = (ctx: PipelineContext) => Promise<string>;
@@ -163,8 +170,44 @@ const stageCorrect: StageFn = async (_ctx) => {
 };
 
 const stageClassify: StageFn = async (_ctx) => {
-  // Subgenre classification not yet implemented (#36)
-  return "not yet implemented";
+  const books = getAllBooks();
+  if (books.length === 0) {
+    return "no books to classify";
+  }
+
+  let classified = 0;
+  let unclassified = 0;
+  const distribution: Record<string, number> = {};
+
+  for (const book of books) {
+    const assignments = classifyBook(book);
+    setBookSubgenresWithMeta(
+      book.id,
+      assignments.map((a) => ({
+        subgenre: a.subgenre,
+        confidence: a.confidence,
+        source: a.source,
+      }))
+    );
+
+    if (assignments.length > 0) {
+      classified++;
+      for (const a of assignments) {
+        distribution[a.subgenre] = (distribution[a.subgenre] ?? 0) + 1;
+      }
+    } else {
+      unclassified++;
+    }
+  }
+
+  // Log subgenre distribution
+  const sorted = Object.entries(distribution).sort((a, b) => b[1] - a[1]);
+  console.log("  Subgenre distribution:");
+  for (const [subgenre, count] of sorted) {
+    console.log(`    ${subgenre}: ${count}`);
+  }
+
+  return `${classified} classified, ${unclassified} unclassified (${books.length} total)`;
 };
 
 const stageDetect: StageFn = async (_ctx) => {
@@ -318,6 +361,157 @@ export async function runPipeline(
     totalDuration,
     booksProcessed: ctx.booksProcessed,
     booksExported: ctx.booksExported,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Backfill pipeline — exhaustive historical fetch for a range of years
+// ---------------------------------------------------------------------------
+
+const DEFAULT_BACKFILL_DELAY_MS = 5000;
+
+export async function runBackfillPipeline(
+  options: BackfillOptions
+): Promise<PipelineResult> {
+  const start = Date.now();
+  const projectRoot = join(import.meta.dirname, "..", "..");
+  const delayMs = options.delayBetweenYears ?? DEFAULT_BACKFILL_DELAY_MS;
+
+  const results: StageResult[] = [];
+  let totalBooksProcessed = 0;
+  let totalBooksExported = 0;
+
+  // 1. MIGRATE — run once before any fetching
+  console.log("Backfill pipeline started");
+  console.log(`  Years: ${options.years.join(", ")}`);
+  console.log(`  Delay between years: ${delayMs}ms`);
+  console.log("");
+
+  const migrateStart = Date.now();
+  try {
+    const details = await stageMigrate({
+      options: {},
+      years: options.years,
+      projectRoot,
+      booksProcessed: 0,
+      booksExported: 0,
+    });
+    const duration = (Date.now() - migrateStart) / 1000;
+    results.push({ name: "MIGRATE", duration, result: "success", details });
+    console.log(`  [1/3] MIGRATE    \u2713 (${duration.toFixed(1)}s) \u2014 ${details}`);
+  } catch (err: unknown) {
+    const duration = (Date.now() - migrateStart) / 1000;
+    const msg = err instanceof Error ? err.message : String(err);
+    results.push({ name: "MIGRATE", duration, result: "error", details: msg });
+    console.error(`  [1/3] MIGRATE    \u2717 (${duration.toFixed(1)}s) \u2014 ${msg}`);
+    closeDb();
+    return {
+      stages: results,
+      totalDuration: (Date.now() - start) / 1000,
+      booksProcessed: 0,
+      booksExported: 0,
+    };
+  }
+
+  // 2. FETCH — iterate over each year with full mode (no incremental cursors)
+  const fetchStart = Date.now();
+  const fetchParts: string[] = [];
+  const fetchErrors: string[] = [];
+  const fetcher = new AudibleFetcher();
+
+  for (let i = 0; i < options.years.length; i++) {
+    const year = options.years[i];
+    console.log(`\n  Year ${year} (${i + 1}/${options.years.length}): fetching...`);
+
+    try {
+      const result = await fetcher.fetch({
+        year,
+        incremental: false, // backfill is always exhaustive
+      });
+      totalBooksProcessed += result.booksFound;
+      fetchParts.push(
+        `${year}: ${result.booksNew} new, ${result.booksUpdated} updated`
+      );
+      if (result.errors.length > 0) {
+        fetchErrors.push(...result.errors);
+        fetchParts.push(`${year}: ${result.errors.length} error(s)`);
+      }
+      console.log(
+        `  Year ${year}: done \u2014 ${result.booksNew} new, ${result.booksUpdated} updated, ${result.booksFound} total`
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      fetchParts.push(`${year}: failed (${msg})`);
+      fetchErrors.push(msg);
+      console.error(`  Year ${year}: failed \u2014 ${msg}`);
+    }
+
+    // Delay between years (skip after the last one)
+    if (i < options.years.length - 1 && delayMs > 0) {
+      console.log(`  Waiting ${delayMs}ms before next year...`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  const fetchDuration = (Date.now() - fetchStart) / 1000;
+  const fetchSummary = fetchParts.join("; ");
+  const fetchResultStatus: "success" | "warning" =
+    fetchErrors.length > 0 ? "warning" : "success";
+  results.push({
+    name: "FETCH",
+    duration: fetchDuration,
+    result: fetchResultStatus,
+    details: fetchSummary,
+  });
+  console.log(
+    `\n  [2/3] FETCH      ${fetchResultStatus === "success" ? "\u2713" : "\u26A0"} (${fetchDuration.toFixed(1)}s) \u2014 ${fetchSummary}`
+  );
+
+  // 3. EXPORT — generate static JSON for all years
+  if (options.dryRun) {
+    results.push({
+      name: "EXPORT",
+      duration: 0,
+      result: "success",
+      details: "dry run \u2014 skipped",
+    });
+    console.log(`  [3/3] EXPORT     \u2713 (0.0s) \u2014 dry run \u2014 skipped`);
+  } else {
+    const exportStart = Date.now();
+    const exportCtx: PipelineContext = {
+      options: {},
+      years: options.years,
+      projectRoot,
+      booksProcessed: totalBooksProcessed,
+      booksExported: 0,
+    };
+    try {
+      const details = await stageExport(exportCtx);
+      const duration = (Date.now() - exportStart) / 1000;
+      totalBooksExported = exportCtx.booksExported;
+      results.push({ name: "EXPORT", duration, result: "success", details });
+      console.log(`  [3/3] EXPORT     \u2713 (${duration.toFixed(1)}s) \u2014 ${details}`);
+    } catch (err: unknown) {
+      const duration = (Date.now() - exportStart) / 1000;
+      const msg = err instanceof Error ? err.message : String(err);
+      results.push({ name: "EXPORT", duration, result: "error", details: msg });
+      console.error(`  [3/3] EXPORT     \u2717 (${duration.toFixed(1)}s) \u2014 ${msg}`);
+    }
+  }
+
+  closeDb();
+
+  const totalDuration = (Date.now() - start) / 1000;
+  console.log(
+    `\nBackfill completed in ${totalDuration.toFixed(1)}s \u2014 ` +
+      `${totalBooksProcessed} books processed across ${options.years.length} year(s)`
+  );
+
+  return {
+    stages: results,
+    totalDuration,
+    booksProcessed: totalBooksProcessed,
+    booksExported: totalBooksExported,
   };
 }
 

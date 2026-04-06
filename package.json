@@ -10,6 +10,7 @@
 		"pipeline:export": "tsx scripts/backend/index.ts export",
 		"pipeline:classify": "tsx scripts/backend/index.ts classify",
 		"pipeline:build": "tsx scripts/backend/index.ts build",
+		"pipeline:backfill": "tsx scripts/backend/index.ts backfill",
 		"deploy-guard": "node scripts/deploy-guard.js",
 		"build": "npm run pipeline:build && vite build",
 		"preview": "vite preview",
