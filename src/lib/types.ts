@@ -21,19 +21,19 @@ export interface Book {
 export type SortMode = 'relevance' | 'date';
 
 export const subgenreLabels: Record<Subgenre, string> = {
-	litrpg: 'LitRPG',
-	cultivation: 'Cultivation',
-	progression: 'Progression',
-	dungeon: 'Dungeon Core',
-	isekai: 'Isekai'
+	litrpg: '⚔️ LitRPG',
+	cultivation: '🌿 Cultivation',
+	progression: '🏃 Progression',
+	dungeon: '💀 Dungeon Core',
+	isekai: '🚚 Isekai'
 };
 
 export const subgenreColors: Record<Subgenre, string> = {
-	litrpg: '#6366f1',
-	cultivation: '#10b981',
-	progression: '#f59e0b',
-	dungeon: '#ef4444',
-	isekai: '#8b5cf6'
+	litrpg: 'var(--blue-bright, #83a598)',
+	cultivation: 'var(--green-bright, #b8bb26)',
+	progression: 'var(--yellow-bright, #fabd2f)',
+	dungeon: 'var(--red-bright, #fb4934)',
+	isekai: 'var(--purple-bright, #d3869b)'
 };
 
 export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';

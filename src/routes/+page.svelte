@@ -113,17 +113,35 @@
 	});
 
 	const totalCount = $derived(filteredBooks.length);
+
+	/** Count books per genre (within current quarter, ignoring genre filter) */
+	const genreCounts = $derived.by(() => {
+		const monthIndices = quarterMonthIndices[activeQuarter];
+		const inQuarter = currentBooks.filter((b: Book) => {
+			const d = new Date(b.releaseDate);
+			return d.getFullYear() === activeYear && monthIndices.includes(d.getMonth());
+		});
+		const counts: Record<string, number> = {};
+		for (const b of inQuarter) {
+			for (const g of b.subgenres) {
+				counts[g] = (counts[g] ?? 0) + 1;
+			}
+		}
+		return counts;
+	});
 </script>
 
 <div class="app">
 	<header>
 		<div class="header-inner">
 			<h1 class="title">LitRPG Chart</h1>
-			<SeasonNav
-				{activeQuarter}
-				{activeYear}
-				onSeasonChange={handleSeasonChange}
-			/>
+			<div class="header-nav">
+				<SeasonNav
+					{activeQuarter}
+					{activeYear}
+					onSeasonChange={handleSeasonChange}
+				/>
+			</div>
 		</div>
 	</header>
 
@@ -131,21 +149,10 @@
 		<div class="toolbar">
 			<GenreFilter
 				{activeGenres}
+				counts={genreCounts}
 				onGenreToggle={handleGenreToggle}
 			/>
 			<div class="toolbar-right">
-				<div class="sort-toggle">
-					<button
-						class="sort-btn"
-						class:active={sortMode === 'relevance'}
-						onclick={() => sortMode = 'relevance'}
-					>Relevance</button>
-					<button
-						class="sort-btn"
-						class:active={sortMode === 'date'}
-						onclick={() => sortMode = 'date'}
-					>Release Date</button>
-				</div>
 				<span class="count">
 					{#if isLoading}
 						loading...
@@ -159,6 +166,18 @@
 					onSeriesOnlyChange={(v) => seriesOnly = v}
 					onLongRunningChange={(v) => longRunningOnly = v}
 				/>
+				<div class="sort-toggle">
+					<button
+						class="sort-btn"
+						class:active={sortMode === 'relevance'}
+						onclick={() => sortMode = 'relevance'}
+					>Relevance</button>
+					<button
+						class="sort-btn"
+						class:active={sortMode === 'date'}
+						onclick={() => sortMode = 'date'}
+					>Release Date</button>
+				</div>
 			</div>
 		</div>
 
@@ -193,8 +212,16 @@
 
 	<footer>
 		<p class="feedback">Something look wrong? Missing a feature? <a href="https://github.com/iamnbutler/litrpg-chart/issues/new" target="_blank" rel="noopener noreferrer">Write an issue</a></p>
-		<p>Data from Audible. Cover images &copy; respective publishers.</p>
+		<p>Data from Audible. Cover images &copy; respective publishers. AI-narrated titles excluded.</p>
 	</footer>
+
+	<div class="mobile-bottom-bar">
+		<SeasonNav
+			{activeQuarter}
+			{activeYear}
+			onSeasonChange={handleSeasonChange}
+		/>
+	</div>
 </div>
 
 <style>
@@ -223,10 +250,11 @@
 	}
 
 	.title {
-		font-size: 1.1rem;
-		font-weight: 800;
+		font-family: var(--font-serif);
+		font-size: 1.2rem;
+		font-weight: 700;
 		color: var(--text-primary);
-		letter-spacing: -0.02em;
+		letter-spacing: -0.01em;
 		white-space: nowrap;
 	}
 
@@ -254,32 +282,33 @@
 
 	.sort-toggle {
 		display: flex;
-		border: 1px solid var(--border);
-		border-radius: 6px;
-		overflow: hidden;
+		gap: 0.5rem;
 	}
 
 	.sort-btn {
-		padding: 0.3rem 0.6rem;
+		padding: 0;
+		font-family: var(--font-mono);
 		font-size: 0.75rem;
+		font-weight: 500;
 		background: transparent;
 		color: var(--text-muted);
 		border: none;
 		cursor: pointer;
-		transition: all 0.15s;
+		transition: color 0.15s;
 	}
 
-	.sort-btn:not(:last-child) {
-		border-right: 1px solid var(--border);
+	.sort-btn:hover {
+		color: var(--text-secondary);
 	}
 
 	.sort-btn.active {
-		background: var(--accent);
-		color: white;
+		color: var(--text-primary);
+		font-weight: 700;
 	}
 
 	.count {
-		font-size: 0.8rem;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
 		color: var(--text-muted);
 		white-space: nowrap;
 	}
@@ -289,8 +318,9 @@
 	}
 
 	.month-heading {
-		font-size: 0.85rem;
-		font-weight: 600;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-weight: 500;
 		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
@@ -301,9 +331,17 @@
 
 	.book-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-		gap: 1rem;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.5rem;
 	}
+
+	@media (max-width: 850px) {
+		.book-grid {
+			grid-template-columns: 1fr;
+			gap: 1rem;
+		}
+	}
+
 
 	.empty {
 		text-align: center;
@@ -324,7 +362,8 @@
 	}
 
 	footer p {
-		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
 		color: var(--text-muted);
 	}
 
@@ -341,22 +380,64 @@
 		text-decoration: underline;
 	}
 
+	.mobile-bottom-bar {
+		display: none;
+	}
+
+	.header-nav {
+		display: contents;
+	}
+
 	@media (max-width: 600px) {
+		header {
+			position: static;
+			background: transparent;
+			border-bottom: none;
+		}
+
 		.header-inner {
-			padding: 0.75rem 1rem;
+			padding: 0.75rem;
+			justify-content: flex-start;
+		}
+
+		.header-nav {
+			display: none;
+		}
+
+		.title {
+			font-size: 1rem;
 		}
 
 		main {
-			padding: 1rem;
+			padding: 0 0.75rem;
+			padding-bottom: 4.5rem;
 		}
 
 		.toolbar {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: 0.5rem;
 		}
 
 		.book-grid {
 			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		.mobile-bottom-bar {
+			display: flex;
+			justify-content: center;
+			position: fixed;
+			bottom: calc(0.75rem + env(safe-area-inset-bottom));
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 20;
+			background: var(--surface);
+			border: 1px solid var(--border);
+			border-radius: 16px;
+			padding: 0.5rem 1rem;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+			width: auto;
 		}
 	}
 </style>

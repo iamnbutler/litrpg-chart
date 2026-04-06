@@ -17,11 +17,11 @@
 </script>
 
 <div class="filter-popover">
-	<button class="trigger" class:has-filters={activeCount > 0} onclick={() => open = !open}>
-		<svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+	<button class="trigger" class:has-filters={activeCount > 0} onclick={() => open = !open} aria-label="Filters{activeCount > 0 ? ` (${activeCount} active)` : ''}">
+		<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 			<path d="M1 3h14M4 8h8M6 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
 		</svg>
-		Filters{#if activeCount > 0}&nbsp;({activeCount}){/if}
+		{#if activeCount > 0}<span class="badge">{activeCount}</span>{/if}
 	</button>
 
 	{#if open}
@@ -52,28 +52,43 @@
 	}
 
 	.trigger {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 0.35rem 0.7rem;
-		border: 1px solid var(--border);
+		justify-content: center;
+		padding: 0.35rem;
+		border: none;
 		background: transparent;
 		color: var(--text-muted);
 		border-radius: 6px;
 		cursor: pointer;
-		font-size: 0.75rem;
-		font-weight: 500;
 		transition: all 0.15s ease;
 	}
 
 	.trigger:hover {
-		border-color: var(--accent);
 		color: var(--text-primary);
 	}
 
 	.trigger.has-filters {
-		border-color: var(--accent);
 		color: var(--accent);
+	}
+
+	.badge {
+		position: absolute;
+		top: -2px;
+		right: -4px;
+		font-family: var(--font-mono);
+		font-size: 0.55rem;
+		font-weight: 700;
+		background: var(--accent);
+		color: var(--bg);
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
 	}
 
 	.backdrop {
@@ -120,13 +135,15 @@
 	.label-text {
 		display: flex;
 		flex-direction: column;
+		font-family: var(--font-serif);
 		font-size: 0.8rem;
 		color: var(--text-primary);
 		line-height: 1.3;
 	}
 
 	.label-desc {
-		font-size: 0.7rem;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
 		color: var(--text-muted);
 	}
 </style>

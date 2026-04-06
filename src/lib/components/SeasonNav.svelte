@@ -18,17 +18,20 @@
 		{ value: 'Q4', label: 'Fall' }
 	];
 
-	function prevYear() {
-		onSeasonChange(activeQuarter, activeYear - 1);
-	}
-
-	function nextYear() {
-		onSeasonChange(activeQuarter, activeYear + 1);
-	}
+	const currentYear = new Date().getFullYear();
+	const yearOptions = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
 </script>
 
 <div class="season-nav">
-	<button class="year-arrow" onclick={prevYear} aria-label="Previous year">&larr;</button>
+	<select
+		class="year-select"
+		value={activeYear}
+		onchange={(e) => onSeasonChange(activeQuarter, parseInt(e.currentTarget.value, 10))}
+	>
+		{#each yearOptions as y}
+			<option value={y}>{y}</option>
+		{/each}
+	</select>
 
 	<div class="seasons">
 		{#each seasons as s}
@@ -37,75 +40,56 @@
 				class:active={activeQuarter === s.value}
 				onclick={() => onSeasonChange(s.value, activeYear)}
 			>
-				<span class="season-label">{s.label}</span>
-				<span class="season-year">{activeYear}</span>
+				{s.label}
 			</button>
 		{/each}
 	</div>
-
-	<button class="year-arrow" onclick={nextYear} aria-label="Next year">&rarr;</button>
 </div>
 
 <style>
 	.season-nav {
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: 0.75rem;
 	}
 
-	.year-arrow {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		border: none;
-		background: var(--surface);
-		color: var(--text-muted);
-		border-radius: 8px;
-		cursor: pointer;
-		font-size: 1rem;
-		transition: all 0.15s ease;
-		flex-shrink: 0;
-	}
-
-	.year-arrow:hover {
+	.year-select {
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 600;
 		color: var(--text-primary);
-		background: var(--card-bg);
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		appearance: none;
+		padding: 0.3rem 1.2rem 0.3rem 0.3rem;
+		background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23928374' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 0.2rem center;
+	}
+
+	.year-select option {
+		background: var(--surface);
+		color: var(--text-primary);
 	}
 
 	.seasons {
 		display: flex;
 		gap: 0;
-		background: var(--surface);
-		padding: 4px;
-		border-radius: 10px;
 	}
 
 	.season-btn {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 1px;
-		padding: 0.45rem 1.25rem;
+		padding: 0.45rem 1rem;
 		border: none;
 		background: transparent;
 		color: var(--text-muted);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.15s ease;
-		line-height: 1;
-	}
-
-	.season-label {
+		font-family: var(--font-serif);
 		font-size: 0.85rem;
-		font-weight: 600;
-	}
-
-	.season-year {
-		font-size: 0.65rem;
-		font-weight: 400;
-		opacity: 0.6;
+		font-weight: 500;
+		line-height: 1;
 	}
 
 	.season-btn:hover {
@@ -115,11 +99,8 @@
 	.season-btn.active {
 		background: var(--card-bg);
 		color: var(--text-primary);
+		font-weight: 700;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-	}
-
-	.season-btn.active .season-year {
-		opacity: 0.8;
 	}
 
 	@media (max-width: 600px) {
@@ -130,6 +111,7 @@
 		.season-btn {
 			flex: 1;
 			padding: 0.45rem 0.5rem;
+			text-align: center;
 		}
 	}
 </style>
