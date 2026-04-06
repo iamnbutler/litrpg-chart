@@ -20,6 +20,8 @@ import { AudibleFetcher } from "./fetchers/audible.js";
 import { HardcoverFetcher } from "./fetchers/hardcover.js";
 import { RoyalRoadScraper } from "./fetchers/royalroad.js";
 import { closeDb } from "./db.js";
+import { getAllBooks, setBookSubgenresWithMeta } from "./db/index.js";
+import { classifyBook } from "./classifiers/subgenre.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -150,8 +152,44 @@ const stageCorrect: StageFn = async (_ctx) => {
 };
 
 const stageClassify: StageFn = async (_ctx) => {
-  // Subgenre classification not yet implemented (#36)
-  return "not yet implemented";
+  const books = getAllBooks();
+  if (books.length === 0) {
+    return "no books to classify";
+  }
+
+  let classified = 0;
+  let unclassified = 0;
+  const distribution: Record<string, number> = {};
+
+  for (const book of books) {
+    const assignments = classifyBook(book);
+    setBookSubgenresWithMeta(
+      book.id,
+      assignments.map((a) => ({
+        subgenre: a.subgenre,
+        confidence: a.confidence,
+        source: a.source,
+      }))
+    );
+
+    if (assignments.length > 0) {
+      classified++;
+      for (const a of assignments) {
+        distribution[a.subgenre] = (distribution[a.subgenre] ?? 0) + 1;
+      }
+    } else {
+      unclassified++;
+    }
+  }
+
+  // Log subgenre distribution
+  const sorted = Object.entries(distribution).sort((a, b) => b[1] - a[1]);
+  console.log("  Subgenre distribution:");
+  for (const [subgenre, count] of sorted) {
+    console.log(`    ${subgenre}: ${count}`);
+  }
+
+  return `${classified} classified, ${unclassified} unclassified (${books.length} total)`;
 };
 
 const stageDetect: StageFn = async (_ctx) => {
