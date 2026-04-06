@@ -54,7 +54,8 @@
 		{/if}
 
 		{#if book.series}
-			<button class="series-line link-btn" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }}>{book.series}{#if book.seriesNumber} &ndash; Book {book.seriesNumber}{/if}</button>
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.series); }}}>{book.series}{#if book.seriesNumber} &ndash; Book {book.seriesNumber}{/if}</span>
 		{/if}
 		<p class="meta-line">
 			{formatDate(book.releaseDate)}
@@ -207,6 +208,15 @@
 		font-family: var(--font-mono, monospace);
 		font-size: 0.7rem;
 		color: var(--text-muted);
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-underline-offset: 2px;
+		transition: text-decoration-color 0.15s;
+	}
+
+	.series-line:hover {
+		text-decoration-color: currentColor;
 	}
 
 .author {
