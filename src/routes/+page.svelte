@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Book, Quarter, Subgenre } from '$lib/types';
+	import type { Book, Quarter, Subgenre, SortMode } from '$lib/types';
 	import { fetchAllBooks } from '$lib/api';
 	import BookCard from '$lib/components/BookCard.svelte';
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
@@ -17,6 +17,7 @@
 	let activeQuarter: Quarter = $state(getCurrentQuarter());
 	let activeYear: number = $state(new Date().getFullYear());
 	let activeGenres: Set<Subgenre> = $state(new Set(['litrpg', 'cultivation']));
+	let sortMode: SortMode = $state('relevance');
 
 	let booksByYear: Record<number, Book[]> = $state({});
 	let loadingYear: number | null = $state(null);
@@ -81,7 +82,11 @@
 				}
 				return true;
 			})
-			.sort((a: Book, b: Book) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+			.sort((a: Book, b: Book) =>
+				sortMode === 'relevance'
+					? b.relevanceScore - a.relevanceScore
+					: new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime()
+			);
 	});
 
 	const monthNames = [
@@ -123,13 +128,27 @@
 				{activeGenres}
 				onGenreToggle={handleGenreToggle}
 			/>
-			<span class="count">
-				{#if isLoading}
-					loading...
-				{:else}
-					{totalCount} title{totalCount !== 1 ? 's' : ''}
-				{/if}
-			</span>
+			<div class="toolbar-right">
+				<div class="sort-toggle">
+					<button
+						class="sort-btn"
+						class:active={sortMode === 'relevance'}
+						onclick={() => sortMode = 'relevance'}
+					>Relevance</button>
+					<button
+						class="sort-btn"
+						class:active={sortMode === 'date'}
+						onclick={() => sortMode = 'date'}
+					>Release Date</button>
+				</div>
+				<span class="count">
+					{#if isLoading}
+						loading...
+					{:else}
+						{totalCount} title{totalCount !== 1 ? 's' : ''}
+					{/if}
+				</span>
+			</div>
 		</div>
 
 		{#if isLoading}
@@ -140,6 +159,12 @@
 			<div class="empty">
 				<p>No audiobooks found for this season.</p>
 				<p class="empty-sub">Try a different season or clear your filters.</p>
+			</div>
+		{:else if sortMode === 'relevance'}
+			<div class="book-grid">
+				{#each filteredBooks as book (book.id)}
+					<BookCard {book} />
+				{/each}
 			</div>
 		{:else}
 			{#each groupedByMonth as group}
@@ -208,6 +233,38 @@
 		align-items: center;
 		gap: 1rem;
 		margin-bottom: 1.5rem;
+	}
+
+	.toolbar-right {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.sort-toggle {
+		display: flex;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.sort-btn {
+		padding: 0.3rem 0.6rem;
+		font-size: 0.75rem;
+		background: transparent;
+		color: var(--text-muted);
+		border: none;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.sort-btn:not(:last-child) {
+		border-right: 1px solid var(--border);
+	}
+
+	.sort-btn.active {
+		background: var(--accent);
+		color: white;
 	}
 
 	.count {

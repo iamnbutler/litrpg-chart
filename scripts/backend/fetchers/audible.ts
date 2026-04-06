@@ -94,12 +94,12 @@ function guessSubgenres(product: AudibleProduct): string[] {
   return subgenres;
 }
 
-/** Detect AI narration: "Virtual Voice" narrator or no narrator at all. */
+/** Detect AI narration: "Virtual Voice", voice replicas/clones, or no narrator. */
 function isAiNarrated(p: AudibleProduct): boolean {
   const narrators = p.narrators ?? [];
   if (narrators.length === 0) return true;
   return narrators.some((n) =>
-    /virtual\s*voice/i.test(n.name)
+    /virtual\s*voice|voice\s*replica|voice\s*clone|ai[\s-]*narrat/i.test(n.name)
   );
 }
 
