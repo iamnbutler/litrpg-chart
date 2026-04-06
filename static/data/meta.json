@@ -1,0 +1,20 @@
+{
+  "lastUpdated": "2026-04-06T15:29:34.910Z",
+  "years": {
+    "2025": {
+      "totalBooks": 1113,
+      "exportedBooks": 271
+    },
+    "2026": {
+      "totalBooks": 412,
+      "exportedBooks": 182
+    },
+    "2027": {
+      "totalBooks": 2,
+      "exportedBooks": 0
+    }
+  },
+  "sources": [
+    "audible"
+  ]
+}
