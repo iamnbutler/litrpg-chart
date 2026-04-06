@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Subgenre } from '$lib/types';
-	import { subgenreLabels, subgenreColors } from '$lib/types';
+	import { subgenreLabels, subgenreColors, filterSubgenres } from '$lib/types';
 
 	let {
 		activeGenres,
@@ -17,7 +17,9 @@
 	const isAll = $derived(activeGenres.size === 0);
 
 	const genres = $derived(
-		(Object.entries(subgenreLabels) as [Subgenre, string][]).filter(([key]) => (counts[key] ?? 0) > 0)
+		filterSubgenres
+			.filter((key) => (counts[key] ?? 0) > 0)
+			.map((key) => [key, subgenreLabels[key]] as [Subgenre, string])
 	);
 
 	const totalCount = $derived(

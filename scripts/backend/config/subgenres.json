@@ -4,54 +4,54 @@
 		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
 	},
 	"cultivation": {
-		"patterns": ["cultivation", "cultivator", "qi ", "dao ", "xianxia"],
+		"patterns": ["cultivation", "cultivator", "qi\\b", "\\bdao\\b", "xianxia"],
 		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
 	},
-"dungeon": {
+	"dungeon": {
 		"patterns": ["dungeon\\s*core", "dungeon\\s*crawl"],
 		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
 	},
 	"isekai": {
 		"patterns": [
 			"isekai",
-			"transported",
+			"transported to another",
 			"reincarnated",
-			"reborn\\s*(in|as|into)",
-			"summoned\\s*(to|into)",
+			"reborn\\s*(in|as|into)\\s*(a|an|another)",
+			"summoned\\s*(to|into)\\s*(a|an|another)",
 			"another\\s*world"
 		],
 		"weight": { "title": 1.0, "subtitle": 1.0, "description": 0.8 }
 	},
 	"tower-climbing": {
-		"patterns": ["tower", "floor", "climber", "ascending"],
+		"patterns": ["tower\\s*climb", "tower\\s*ascen", "floor\\s*boss", "tower\\s*of"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"system-apocalypse": {
-		"patterns": ["system apocalypse", "apocalypse", "integration", "system arrival"],
+		"patterns": ["system\\s*apocalypse", "system\\s*arrival", "system\\s*integrat"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"base-building": {
-		"patterns": ["base build", "settlement", "kingdom build", "town build", "village"],
+		"patterns": ["base\\s*build", "kingdom\\s*build", "town\\s*build", "settlement\\s*build"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"time-loop": {
-		"patterns": ["time loop", "groundhog", "respawn", "restart"],
+		"patterns": ["time\\s*loop", "groundhog", "respawn"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"academy": {
-		"patterns": ["academy", "school of", "magic school", "university"],
+		"patterns": ["magic\\s*(academy|school|university)", "mage\\s*(academy|school)"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"crafting": {
-		"patterns": ["crafter", "crafting", "blacksmith", "enchanter", "alchemist"],
+		"patterns": ["crafter", "crafting\\s*(system|class)", "blacksmith", "enchanter"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"monster-mc": {
-		"patterns": ["monster mc", "reborn as a", "monster evolution", "evolved"],
+		"patterns": ["monster\\s*mc", "reborn\\s*as\\s*a\\s*monster", "monster\\s*evolution"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"wuxia": {
-		"patterns": ["wuxia", "martial arts", "sect", "jianghu"],
+		"patterns": ["wuxia", "jianghu", "\\bsect\\b.*cultivat"],
 		"weight": { "title": 1.0, "subtitle": 0.8, "description": 0.5 }
 	},
 	"defaultSubgenre": null

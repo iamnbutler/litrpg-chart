@@ -37,15 +37,18 @@ export const subgenreLabels: Record<Subgenre, string> = {
 	cultivation: '🌿 Cultivation',
 	dungeon: '💀 Dungeon Core',
 	isekai: '🚚 Isekai',
-	'tower-climbing': '🗼 Tower Climbing',
-	'system-apocalypse': '🌋 System Apocalypse',
-	'base-building': '🏰 Base Building',
-	'time-loop': '🔄 Time Loop',
-	academy: '🎓 Academy',
-	crafting: '🔨 Crafting',
-	'monster-mc': '🐉 Monster MC',
-	wuxia: '🥋 Wuxia'
+	'tower-climbing': 'Tower Climbing',
+	'system-apocalypse': 'System Apocalypse',
+	'base-building': 'Base Building',
+	'time-loop': 'Time Loop',
+	academy: 'Academy',
+	crafting: 'Crafting',
+	'monster-mc': 'Monster MC',
+	wuxia: 'Wuxia'
 };
+
+/** Primary subgenres shown in the filter bar */
+export const filterSubgenres: Subgenre[] = ['litrpg', 'cultivation', 'dungeon', 'isekai'];
 
 export const subgenreColors: Record<Subgenre, string> = {
 	litrpg: 'var(--blue-bright, #83a598)',

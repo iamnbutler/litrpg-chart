@@ -25,9 +25,14 @@
       "breeding",
       "explicit.*content",
       "18\\+",
-      "mature.*content"
+      "mature.*content",
+      "shifter\\s*(romance|elite|guardian|academy|mate)",
+      "dragon\\s*(romance|mate|rider.*romance)",
+      "\\bfae\\b.*romance",
+      "wolf\\s*(shifter|mate)",
+      "bear\\s*(shifter|mate)"
     ],
-    "fields": ["title", "description"]
+    "fields": ["title", "subtitle", "description"]
   },
   "qualityFilter": {
     "enabled": true,
