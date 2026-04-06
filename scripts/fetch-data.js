@@ -9,6 +9,55 @@ const GENRE_SEARCHES = [
 	'cultivation fantasy',
 	'gamelit',
 	'dungeon core audiobook',
+	'xianxia',
+	'level up fantasy',
+	'isekai audiobook',
+	'system apocalypse',
+	'royal road audiobook',
+];
+
+/**
+ * Targeted series/title searches for well-known series in the genre
+ * that don't always have genre keywords in their Audible listings.
+ */
+/**
+ * Targeted series searches for well-known series in the genre.
+ * Keep search terms simple — multi-word author names cause API issues.
+ */
+const SERIES_SEARCHES = [
+	'primal hunter',
+	'he who fights with monsters',
+	'wandering inn',
+	'cinnamon bun',
+	'beware of chicken',
+	'cradle will wight',
+	'path of ascension',
+	'tower of somnus',
+	'iron prince warformed',
+	'bastion',
+	'dungeon crawler carl',
+	'defiance of the fall',
+	'mark of the fool',
+	'azarinth healer',
+	'mother of learning',
+	'beginning after the end',
+	'legends and lattes',
+	'arcane ascension',
+	'divine dungeon',
+	'completionist chronicles',
+	'noobtown',
+	'ten realms chatfield',
+	'super powereds',
+	'awaken online',
+	'good guys ugland',
+	'bad guys ugland',
+	'ivil antagonist',
+	'heart of dorkness',
+	'beneath the dragoneye moons',
+	'Jake\'s magical market',
+	'mage errant',
+	'forge of destiny',
+	'solo leveling audiobook',
 ];
 
 const AUDIBLE_API = 'https://api.audible.com/1.0/catalog/products';
@@ -62,9 +111,18 @@ function productToBook(p) {
 		const num = parseFloat(series.sequence);
 		if (!isNaN(num)) seriesNumber = num;
 	}
+
+	// Build title: use product title if available, fall back to series info
+	let title = p.title;
+	if (!title && series) {
+		title = seriesNumber ? `${series.title} ${seriesNumber}` : series.title;
+	}
+	if (!title) title = 'Untitled';
+	if (p.subtitle) title += `: ${p.subtitle}`;
+
 	return {
 		id: p.asin,
-		title: p.title + (p.subtitle ? `: ${p.subtitle}` : ''),
+		title,
 		series: series?.title ?? '',
 		seriesNumber,
 		author: (p.authors ?? []).map(a => a.name).join(', '),
@@ -78,15 +136,15 @@ function productToBook(p) {
 	};
 }
 
-async function fetchPage(keywords, page) {
+async function fetchPage(keywords, page, sort = '-ReleaseDate') {
 	const params = new URLSearchParams({
 		keywords,
 		num_results: '50',
 		page: String(page),
-		products_sort_by: '-ReleaseDate',
 		response_groups: 'product_attrs,contributors,series,media,rating',
 		image_sizes: '500'
 	});
+	if (sort) params.set('products_sort_by', sort);
 	const res = await fetch(`${AUDIBLE_API}?${params}`);
 	if (!res.ok) throw new Error(`Audible API error: ${res.status}`);
 	return res.json();
@@ -96,24 +154,27 @@ async function fetchYear(year) {
 	const seen = new Set();
 	const books = [];
 
+	async function processProducts(data) {
+		if (!data.products) return;
+		for (const p of data.products) {
+			if (seen.has(p.asin)) continue;
+			if (p.language !== 'english') continue;
+			if (isHaremOrErotic(p)) continue;
+			const releaseYear = new Date(p.release_date).getFullYear();
+			if (releaseYear !== year) continue;
+			seen.add(p.asin);
+			books.push(productToBook(p));
+		}
+	}
+
+	// Genre keyword searches: paginate deeply, sorted by date
 	for (const keyword of GENRE_SEARCHES) {
 		try {
-			const maxPages = 15; // enough to cover a full year
-			for (let page = 1; page <= maxPages; page++) {
-				const data = await fetchPage(keyword, page);
+			for (let page = 1; page <= 15; page++) {
+				const data = await fetchPage(keyword, page, '-ReleaseDate');
 				if (!data.products || data.products.length === 0) break;
+				await processProducts(data);
 
-				for (const p of data.products) {
-					if (seen.has(p.asin)) continue;
-					if (p.language !== 'english') continue;
-					if (isHaremOrErotic(p)) continue;
-					const releaseYear = new Date(p.release_date).getFullYear();
-					if (releaseYear !== year) continue;
-					seen.add(p.asin);
-					books.push(productToBook(p));
-				}
-
-				// Stop paginating once we've passed the target year
 				const last = data.products[data.products.length - 1];
 				if (last && new Date(last.release_date).getFullYear() < year) break;
 				await new Promise(r => setTimeout(r, 300));
@@ -121,7 +182,24 @@ async function fetchYear(year) {
 		} catch (err) {
 			console.error(`  Failed "${keyword}":`, err.message);
 		}
-		await new Promise(r => setTimeout(r, 500));
+		await new Promise(r => setTimeout(r, 300));
+	}
+
+	// Series searches: just grab all results (no date sort — it breaks some queries)
+	for (const keyword of SERIES_SEARCHES) {
+		try {
+			for (let page = 1; page <= 3; page++) {
+				const data = await fetchPage(keyword, page, '');
+				if (!data.products || data.products.length === 0) break;
+				await processProducts(data);
+
+				if (data.products.length < 50) break; // last page
+				await new Promise(r => setTimeout(r, 300));
+			}
+		} catch (err) {
+			console.error(`  Failed "${keyword}":`, err.message);
+		}
+		await new Promise(r => setTimeout(r, 300));
 	}
 
 	books.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
