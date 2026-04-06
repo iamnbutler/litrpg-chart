@@ -17,6 +17,8 @@ import { execSync } from "node:child_process";
 import { join } from "node:path";
 import { runMigrations, getMigrationVersion } from "./migrate.js";
 import { AudibleFetcher } from "./fetchers/audible.js";
+import { HardcoverFetcher } from "./fetchers/hardcover.js";
+import { RoyalRoadScraper } from "./fetchers/royalroad.js";
 import { closeDb } from "./db.js";
 
 // ---------------------------------------------------------------------------
@@ -75,25 +77,61 @@ const stageMigrate: StageFn = async (_ctx) => {
 
 const stageFetch: StageFn = async (ctx) => {
   const { options } = ctx;
-  if (options.source && options.source !== "audible") {
-    return `skipped (source=${options.source} not yet implemented)`;
-  }
-
-  const fetcher = new AudibleFetcher();
   const parts: string[] = [];
 
-  for (const year of ctx.years) {
-    console.log(`  Fetching ${year}...`);
-    const result = await fetcher.fetch({
-      year,
-      incremental: !options.full,
-    });
-    ctx.booksProcessed += result.booksFound;
-    parts.push(
-      `${year}: ${result.booksNew} new, ${result.booksUpdated} updated`
-    );
-    if (result.errors.length > 0) {
-      parts.push(`  (${result.errors.length} errors)`);
+  // 1. Royal Road discovery (find new series to search on Audible)
+  if (!options.source || options.source === "royalroad") {
+    try {
+      const rr = new RoyalRoadScraper();
+      const { discovered, errors: rrErrors } = await rr.discover();
+      if (discovered.length > 0) {
+        parts.push(`royalroad: ${discovered.length} new series discovered`);
+        // Log discovered series for manual review / future auto-add
+        for (const s of discovered.slice(0, 10)) {
+          console.log(`    → ${s.title} (${s.subgenres.join(", ")})`);
+        }
+        if (discovered.length > 10) {
+          console.log(`    ... and ${discovered.length - 10} more`);
+        }
+      } else {
+        parts.push("royalroad: no new series");
+      }
+      if (rrErrors.length > 0) parts.push(`royalroad: ${rrErrors.length} errors`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      parts.push(`royalroad: failed (${msg})`);
+    }
+  }
+
+  // 2. Audible fetch (primary data source)
+  if (!options.source || options.source === "audible") {
+    const fetcher = new AudibleFetcher();
+    for (const year of ctx.years) {
+      console.log(`  Fetching ${year}...`);
+      const result = await fetcher.fetch({
+        year,
+        incremental: !options.full,
+      });
+      ctx.booksProcessed += result.booksFound;
+      parts.push(
+        `audible ${year}: ${result.booksNew} new, ${result.booksUpdated} updated`
+      );
+      if (result.errors.length > 0) {
+        parts.push(`  (${result.errors.length} errors)`);
+      }
+    }
+  }
+
+  // 3. Hardcover enrichment (after Audible, so we have books to enrich)
+  if (!options.source || options.source === "hardcover") {
+    try {
+      const hc = new HardcoverFetcher();
+      const { enriched, errors: hcErrors } = await hc.enrich();
+      parts.push(`hardcover: ${enriched} books enriched`);
+      if (hcErrors.length > 0) parts.push(`hardcover: ${hcErrors.length} errors`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      parts.push(`hardcover: failed (${msg})`);
     }
   }
 
@@ -101,8 +139,8 @@ const stageFetch: StageFn = async (ctx) => {
 };
 
 const stageCorrect: StageFn = async (_ctx) => {
-  // Community corrections not yet implemented (#35)
-  return "not yet implemented";
+  // Community corrections (manual overrides) not yet implemented (#35)
+  return "no corrections file found";
 };
 
 const stageClassify: StageFn = async (_ctx) => {
