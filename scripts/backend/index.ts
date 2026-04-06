@@ -1,11 +1,16 @@
 import { closeDb, getDb } from "./db.js";
+import { getMigrationVersion, runMigrations } from "./migrate.js";
 
 const commands: Record<string, () => void> = {
 	migrate() {
-		const db = getDb();
-		// Future: run numbered SQL migrations from migrations/
-		console.log("Migrations complete (no migrations to run).");
-		void db;
+		console.log("Running migrations...");
+		const count = runMigrations();
+		const version = getMigrationVersion();
+		if (count === 0) {
+			console.log(`Already up to date (version ${version}).`);
+		} else {
+			console.log(`Applied ${count} migration(s). Now at version ${version}.`);
+		}
 	},
 
 	fetch() {
@@ -21,9 +26,11 @@ const commands: Record<string, () => void> = {
 	},
 
 	stats() {
+		const version = getMigrationVersion();
+		console.log(`Migration version: ${version}`);
 		const db = getDb();
-		console.log("Database stats: no tables yet.");
-		void db;
+		const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence' ORDER BY name").all() as { name: string }[];
+		console.log(`Tables: ${tables.map((t) => t.name).join(", ") || "(none)"}`);
 	},
 };
 
