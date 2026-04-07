@@ -55,7 +55,7 @@
 
 		{#if book.series}
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.series); }}}>{book.series}{#if book.seriesNumber} &ndash; Book {book.seriesNumber}{/if}</span>
+			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.series); }}}>{book.series}{#if book.seriesNumber}{` \u2013 Book ${book.seriesNumber}`}{/if}</span>
 		{/if}
 		<p class="meta-line">
 			{formatDate(book.releaseDate)}
