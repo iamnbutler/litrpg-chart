@@ -17,8 +17,12 @@ const AUDIBLE_API = "https://api.audible.com/1.0/catalog/products";
 const RESPONSE_GROUPS =
   "product_attrs,contributors,series,media,rating,category_ladders";
 
-/** How many days before a search cursor is considered stale */
+/** How many days before a productive cursor is considered stale */
 const CURSOR_STALE_DAYS = 7;
+/** How many days before a zero-result cursor is retried (likely rate-limited) */
+const CURSOR_EMPTY_RETRY_DAYS = 1;
+/** How many days before an exhausted cursor with results is re-checked */
+const CURSOR_EXHAUSTED_DAYS = 30;
 
 interface AudibleProduct {
   asin: string;
@@ -143,20 +147,26 @@ function productToBookRow(p: AudibleProduct): BookRow {
 }
 
 function isCursorFresh(
-  cursor: { last_fetched_at: string; is_exhausted: number } | undefined,
+  cursor: { last_fetched_at: string; is_exhausted: number; results_found: number } | undefined,
   year: number,
   currentYear: number,
   staleDays: number
 ): boolean {
   if (!cursor) return false;
-  // Current year: always re-fetch
-  if (year === currentYear) return false;
-  // Past years: skip if exhausted
-  if (cursor.is_exhausted) return true;
-  // Check staleness
+
   const fetchedAt = new Date(cursor.last_fetched_at + "Z").getTime();
-  const ageMs = Date.now() - fetchedAt;
-  const ageDays = ageMs / (1000 * 60 * 60 * 24);
+  const ageDays = (Date.now() - fetchedAt) / (1000 * 60 * 60 * 24);
+
+  if (cursor.is_exhausted) {
+    if (cursor.results_found === 0) {
+      // Zero results likely means rate-limited — retry after short cooldown
+      return ageDays < CURSOR_EMPTY_RETRY_DAYS;
+    }
+    // Had real results — this search is done, re-check rarely
+    return ageDays < CURSOR_EXHAUSTED_DAYS;
+  }
+
+  // Not exhausted — use standard staleness window
   return ageDays < staleDays;
 }
 
@@ -325,7 +335,7 @@ export class AudibleFetcher implements Fetcher {
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);
-      upsertSearchCursor("audible", searchKey, year, isExhausted);
+      upsertSearchCursor("audible", searchKey, year, isExhausted, resultsFound);
     }
 
     // Genre keyword searches: paginate deeply, sorted by date
@@ -386,7 +396,7 @@ export class AudibleFetcher implements Fetcher {
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);
-      upsertSearchCursor("audible", searchKey, year, isExhausted);
+      upsertSearchCursor("audible", searchKey, year, isExhausted, resultsFound);
     }
 
     // Series-specific searches: merged best-of-3 per page (no date sort)
@@ -439,7 +449,7 @@ export class AudibleFetcher implements Fetcher {
       }
 
       completeFetchRun(runId, pagesFetched, resultsFound);
-      upsertSearchCursor("audible", searchKey, year, isExhausted);
+      upsertSearchCursor("audible", searchKey, year, isExhausted, resultsFound);
     }
 
     return {

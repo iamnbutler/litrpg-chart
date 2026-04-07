@@ -465,21 +465,24 @@ export function upsertSearchCursor(
   source: string,
   searchKey: string,
   year: number,
-  isExhausted: boolean
+  isExhausted: boolean,
+  resultsFound: number = 0
 ): void {
   const db = getDb();
   db.prepare(
-    `INSERT INTO search_cursors (source, search_key, year, last_fetched_at, is_exhausted)
-     VALUES (?, ?, ?, datetime('now'), ?)
+    `INSERT INTO search_cursors (source, search_key, year, last_fetched_at, is_exhausted, results_found)
+     VALUES (?, ?, ?, datetime('now'), ?, ?)
      ON CONFLICT(source, search_key, year) DO UPDATE SET
        last_fetched_at = datetime('now'),
-       is_exhausted = excluded.is_exhausted`
-  ).run(source, searchKey, year, isExhausted ? 1 : 0);
+       is_exhausted = excluded.is_exhausted,
+       results_found = excluded.results_found`
+  ).run(source, searchKey, year, isExhausted ? 1 : 0, resultsFound);
 }
 
 export interface SearchCursor {
   last_fetched_at: string;
   is_exhausted: number;
+  results_found: number;
 }
 
 export function getSearchCursor(
@@ -490,7 +493,7 @@ export function getSearchCursor(
   const db = getDb();
   return db
     .prepare(
-      "SELECT last_fetched_at, is_exhausted FROM search_cursors WHERE source = ? AND search_key = ? AND year = ?"
+      "SELECT last_fetched_at, is_exhausted, results_found FROM search_cursors WHERE source = ? AND search_key = ? AND year = ?"
     )
     .get(source, searchKey, year) as SearchCursor | undefined;
 }
