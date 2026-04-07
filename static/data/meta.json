@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-07T13:54:39.033Z",
+  "lastUpdated": "2026-04-07T14:31:22.307Z",
   "years": {
     "1999": {
       "totalBooks": 1,
@@ -22,7 +22,7 @@
       "exportedBooks": 0
     },
     "2004": {
-      "totalBooks": 4,
+      "totalBooks": 5,
       "exportedBooks": 0
     },
     "2005": {
@@ -42,7 +42,7 @@
       "exportedBooks": 0
     },
     "2009": {
-      "totalBooks": 11,
+      "totalBooks": 12,
       "exportedBooks": 0
     },
     "2010": {
@@ -50,7 +50,7 @@
       "exportedBooks": 0
     },
     "2011": {
-      "totalBooks": 13,
+      "totalBooks": 14,
       "exportedBooks": 0
     },
     "2012": {
@@ -70,7 +70,7 @@
       "exportedBooks": 0
     },
     "2016": {
-      "totalBooks": 29,
+      "totalBooks": 32,
       "exportedBooks": 0
     },
     "2017": {
@@ -82,36 +82,36 @@
       "exportedBooks": 11
     },
     "2019": {
-      "totalBooks": 82,
+      "totalBooks": 83,
       "exportedBooks": 23
     },
     "2020": {
-      "totalBooks": 106,
-      "exportedBooks": 33
+      "totalBooks": 111,
+      "exportedBooks": 31
     },
     "2021": {
-      "totalBooks": 176,
-      "exportedBooks": 60
+      "totalBooks": 187,
+      "exportedBooks": 65
     },
     "2022": {
-      "totalBooks": 139,
-      "exportedBooks": 55
+      "totalBooks": 155,
+      "exportedBooks": 66
     },
     "2023": {
-      "totalBooks": 222,
-      "exportedBooks": 74
+      "totalBooks": 236,
+      "exportedBooks": 84
     },
     "2024": {
-      "totalBooks": 524,
-      "exportedBooks": 174
+      "totalBooks": 537,
+      "exportedBooks": 182
     },
     "2025": {
-      "totalBooks": 1140,
-      "exportedBooks": 260
+      "totalBooks": 1153,
+      "exportedBooks": 268
     },
     "2026": {
-      "totalBooks": 1317,
-      "exportedBooks": 251
+      "totalBooks": 1319,
+      "exportedBooks": 254
     },
     "2027": {
       "totalBooks": 2,
