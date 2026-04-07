@@ -174,6 +174,41 @@ function getDistinctSources(db: Database.Database): string[] {
   return rows.map((r) => r.source);
 }
 
+/**
+ * Query ALL books across all years (for cross-year series index).
+ * Only includes books that belong to a series.
+ */
+function queryAllSeriesBooks(db: Database.Database): BookRow[] {
+  const stmt = db.prepare(`
+    SELECT
+      b.id,
+      b.title,
+      b.author,
+      b.narrator,
+      b.release_date,
+      b.cover_url,
+      b.runtime_minutes,
+      b.description,
+      b.url,
+      b.rating,
+      b.rating_count,
+      b.is_ai_narrated,
+      b.quality_score,
+      b.series_id,
+      s.title AS series_title,
+      b.series_number,
+      GROUP_CONCAT(bsg.subgenre) AS subgenres
+    FROM books b
+    LEFT JOIN series s ON s.id = b.series_id
+    LEFT JOIN book_subgenres bsg ON bsg.book_id = b.id
+    WHERE b.series_id IS NOT NULL
+    GROUP BY b.id
+    ORDER BY b.id
+  `);
+
+  return stmt.all() as BookRow[];
+}
+
 // ---------------------------------------------------------------------------
 // Filters
 // ---------------------------------------------------------------------------
@@ -480,6 +515,27 @@ function runExport(): void {
         exportedBooks: exported.length,
       };
     }
+
+    // Export cross-year series index
+    const allSeriesBooks = queryAllSeriesBooks(db);
+    const { filtered: seriesFiltered } = applyFilters(allSeriesBooks, filters);
+    const allScores = computeRelevanceScores(seriesFiltered, seriesScores);
+    const seriesIndex: Record<string, ExportedBook[]> = {};
+    for (const row of seriesFiltered) {
+      const seriesName = row.series_title ?? "";
+      if (!seriesName) continue;
+      if (!seriesIndex[seriesName]) seriesIndex[seriesName] = [];
+      seriesIndex[seriesName].push(toExportedBook(row, allScores.get(row.id) ?? 0));
+    }
+    // Sort each series by seriesNumber
+    for (const books of Object.values(seriesIndex)) {
+      books.sort((a, b) => (a.seriesNumber ?? 999) - (b.seriesNumber ?? 999));
+    }
+    const seriesPath = join(outDir, "series.json");
+    writeFileSync(seriesPath, JSON.stringify(seriesIndex));
+    const seriesCount = Object.keys(seriesIndex).length;
+    const seriesBookCount = Object.values(seriesIndex).reduce((s, b) => s + b.length, 0);
+    console.log(`Series index: ${seriesCount} series, ${seriesBookCount} books → ${seriesPath}`);
 
     const metaPath = join(outDir, "meta.json");
     writeFileSync(metaPath, JSON.stringify(meta, null, 2));

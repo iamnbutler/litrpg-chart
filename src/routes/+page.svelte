@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Book, Quarter, Subgenre, SortMode, ActiveFilter } from '$lib/types';
-	import { fetchAllBooks, fetchMeta } from '$lib/api';
+	import { fetchAllBooks, fetchMeta, fetchSeriesBooks, fetchAuthorBooks, fetchNarratorBooks } from '$lib/api';
 	import BookCard from '$lib/components/BookCard.svelte';
 	import SeasonNav from '$lib/components/SeasonNav.svelte';
 	import GenreFilter from '$lib/components/GenreFilter.svelte';
@@ -85,35 +85,27 @@
 	const currentBooks = $derived(booksByYear[activeYear] ?? []);
 	const isLoading = $derived(loadingYear === activeYear);
 
-	/** All books across loaded years (for author/series modal) */
-	const allLoadedBooks = $derived(Object.values(booksByYear).flat());
+	/** Modal books loaded from cross-year series index */
+	let modalBooks: Book[] = $state([]);
 
-	const modalBooks = $derived.by(() => {
-		if (!activeFilter) return [];
-		return allLoadedBooks
-			.filter((b: Book) => {
-				if (activeFilter!.type === 'author') {
-					const name = activeFilter!.value.toLowerCase();
-					const authors = b.author?.toLowerCase().split(',').map(s => s.trim()) ?? [];
-					return authors.some(a => a === name);
-				}
-				if (activeFilter!.type === 'narrator') {
-					const name = activeFilter!.value.toLowerCase();
-					const narrators = b.narrator?.toLowerCase().split(',').map(s => s.trim()) ?? [];
-					return narrators.some(n => n === name);
-				}
-				if (activeFilter!.type === 'series') {
-					return b.series === activeFilter!.value;
-				}
-				return true;
-			})
-			.sort((a: Book, b: Book) => {
-				if (activeFilter!.type === 'series' && a.seriesNumber != null && b.seriesNumber != null) {
-					return a.seriesNumber - b.seriesNumber;
-				}
-				return b.relevanceScore - a.relevanceScore;
-			});
-	});
+	async function loadModalBooks(filter: ActiveFilter) {
+		let books: Book[];
+		if (filter.type === 'series') {
+			books = await fetchSeriesBooks(filter.value);
+		} else if (filter.type === 'author') {
+			books = await fetchAuthorBooks(filter.value);
+		} else {
+			books = await fetchNarratorBooks(filter.value);
+		}
+		// Sort: series by number, others by relevance
+		books.sort((a, b) => {
+			if (filter.type === 'series' && a.seriesNumber != null && b.seriesNumber != null) {
+				return a.seriesNumber - b.seriesNumber;
+			}
+			return b.relevanceScore - a.relevanceScore;
+		});
+		modalBooks = books;
+	}
 
 	const filteredBooks = $derived.by(() => {
 		const monthIndices = quarterMonthIndices[activeQuarter];
@@ -160,30 +152,22 @@
 
 	function handleAuthorClick(name: string) {
 		activeFilter = { type: 'author', value: name };
-		const y = new Date().getFullYear();
-		fetchYear(y - 1);
-		fetchYear(y);
-		fetchYear(y + 1);
+		loadModalBooks(activeFilter);
 	}
 
 	function handleNarratorClick(name: string) {
 		activeFilter = { type: 'narrator', value: name };
-		const y = new Date().getFullYear();
-		fetchYear(y - 1);
-		fetchYear(y);
-		fetchYear(y + 1);
+		loadModalBooks(activeFilter);
 	}
 
 	function handleSeriesClick(series: string) {
 		activeFilter = { type: 'series', value: series };
-		const y = new Date().getFullYear();
-		fetchYear(y - 1);
-		fetchYear(y);
-		fetchYear(y + 1);
+		loadModalBooks(activeFilter);
 	}
 
 	function clearFilter() {
 		activeFilter = null;
+		modalBooks = [];
 	}
 
 	/** Count books per genre (within current quarter, ignoring genre filter) */
