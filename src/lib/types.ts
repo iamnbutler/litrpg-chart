@@ -67,6 +67,39 @@ export const subgenreColors: Record<Subgenre, string> = {
 
 export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
 
+export type Season = 'winter' | 'spring' | 'summer' | 'fall';
+
+export const seasonOrder: Season[] = ['winter', 'spring', 'summer', 'fall'];
+
+export const seasonToQuarter: Record<Season, Quarter> = {
+	winter: 'Q1',
+	spring: 'Q2',
+	summer: 'Q3',
+	fall: 'Q4'
+};
+
+export const quarterToSeason: Record<Quarter, Season> = {
+	Q1: 'winter',
+	Q2: 'spring',
+	Q3: 'summer',
+	Q4: 'fall'
+};
+
+export const seasonLabels: Record<Season, string> = {
+	winter: 'Winter',
+	spring: 'Spring',
+	summer: 'Summer',
+	fall: 'Fall'
+};
+
+export function getCurrentSeason(): Season {
+	const month = new Date().getMonth();
+	if (month < 3) return 'winter';
+	if (month < 6) return 'spring';
+	if (month < 9) return 'summer';
+	return 'fall';
+}
+
 export interface ActiveFilter {
 	type: 'author' | 'narrator' | 'series';
 	value: string;
