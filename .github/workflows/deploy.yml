@@ -46,7 +46,8 @@ jobs:
 
       - run: npm ci
 
-      - name: Run pipeline
+      - name: Run pipeline (scheduled/manual only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: npm run pipeline:build -- ${{ inputs.full_fetch && '--full' || '' }} ${{ inputs.skip_guard && '--skip-guard' || '' }}
         env:
           HARDCOVER_API_TOKEN: ${{ secrets.HARDCOVER_API_TOKEN }}
