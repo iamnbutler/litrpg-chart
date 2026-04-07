@@ -54,6 +54,7 @@ interface BookRow {
   rating_count: number | null;
   is_ai_narrated: number;
   quality_score: number | null;
+  series_id: string | null;
   series_title: string | null;
   series_number: number | null;
   subgenres: string | null; // comma-separated from GROUP_CONCAT
@@ -133,6 +134,7 @@ function queryBooksByYear(db: Database.Database, year: number): BookRow[] {
       b.rating_count,
       b.is_ai_narrated,
       b.quality_score,
+      b.series_id,
       s.title AS series_title,
       b.series_number,
       GROUP_CONCAT(bsg.subgenre) AS subgenres
@@ -274,13 +276,71 @@ function logFilterStats(stats: FilterStats): void {
 }
 
 // ---------------------------------------------------------------------------
-// Relevance scoring — Bayesian weighted rating
+// Series aggregate scores — cross-year reputation for unrated books
+// ---------------------------------------------------------------------------
+
+/** Fraction of series score inherited by unrated books (0–1). */
+const SERIES_INHERIT_FRACTION = 0.6;
+
+interface SeriesAggregate {
+  avgRating: number;
+  totalRatings: number;
+  bookCount: number;
+}
+
+/**
+ * Compute aggregate scores for each series across ALL years.
+ * Returns a map of series_id → relevance score computed from the
+ * series' collective ratings using the same Bayesian formula.
+ */
+function querySeriesAggregateScores(db: Database.Database): Map<string, number> {
+  const rows = db.prepare(`
+    SELECT
+      b.series_id,
+      SUM(b.rating * b.rating_count) AS weighted_sum,
+      SUM(b.rating_count) AS total_ratings,
+      COUNT(*) AS book_count
+    FROM books b
+    WHERE b.series_id IS NOT NULL
+      AND b.rating IS NOT NULL
+      AND b.rating_count > 0
+    GROUP BY b.series_id
+  `).all() as { series_id: string; weighted_sum: number; total_ratings: number; book_count: number }[];
+
+  if (rows.length === 0) return new Map();
+
+  // Global mean across all series' aggregates
+  const totalWeighted = rows.reduce((s, r) => s + r.weighted_sum, 0);
+  const totalVotes = rows.reduce((s, r) => s + r.total_ratings, 0);
+  const C = totalVotes > 0 ? totalWeighted / totalVotes : 0;
+
+  // Median total ratings per series as confidence threshold
+  const counts = rows.map((r) => r.total_ratings).sort((a, b) => a - b);
+  const m = counts[Math.floor(counts.length / 2)];
+
+  const scores = new Map<string, number>();
+  for (const row of rows) {
+    const v = row.total_ratings;
+    const R = v > 0 ? row.weighted_sum / v : 0;
+    const bayesian = (v * R + m * C) / (v + m);
+    scores.set(row.series_id, bayesian * Math.log2(1 + v));
+  }
+
+  return scores;
+}
+
+// ---------------------------------------------------------------------------
+// Relevance scoring — Bayesian weighted rating + series boost
 // ---------------------------------------------------------------------------
 
 /**
  * Compute Bayesian weighted rating for a set of books.
  *
- * score = (v * R + m * C) / (v + m)
+ * For rated books:
+ *   score = bayesian(R, v) * log2(1 + v)
+ *
+ * For unrated books in a known series:
+ *   score = seriesScore * SERIES_INHERIT_FRACTION
  *
  * Where:
  *   v = this book's rating count
@@ -289,11 +349,16 @@ function logFilterStats(stats: FilterStats): void {
  *   C = global mean rating across all books
  *
  * This pulls low-vote books toward the mean while letting
- * well-reviewed books surface naturally.
+ * well-reviewed books surface naturally. Series inheritance ensures
+ * new releases from popular series (e.g. Dungeon Crawler Carl) get a
+ * meaningful baseline instead of ranking at zero.
  */
-function computeRelevanceScores(books: BookRow[]): Map<string, number> {
+function computeRelevanceScores(
+  books: BookRow[],
+  seriesScores: Map<string, number>,
+): Map<string, number> {
   const scored = books.filter((b) => b.rating != null && b.rating_count != null && b.rating_count > 0);
-  if (scored.length === 0) return new Map();
+  if (scored.length === 0 && seriesScores.size === 0) return new Map();
 
   // Global mean rating
   const totalRating = scored.reduce((sum, b) => sum + b.rating! * b.rating_count!, 0);
@@ -302,14 +367,16 @@ function computeRelevanceScores(books: BookRow[]): Map<string, number> {
 
   // Median rating count as confidence threshold
   const counts = scored.map((b) => b.rating_count!).sort((a, b) => a - b);
-  const m = counts[Math.floor(counts.length / 2)];
+  const m = counts.length > 0 ? counts[Math.floor(counts.length / 2)] : 0;
 
   const scores = new Map<string, number>();
   for (const book of books) {
     const v = book.rating_count ?? 0;
     const R = book.rating ?? 0;
     if (v === 0) {
-      scores.set(book.id, 0);
+      // Inherit series reputation for unrated books
+      const seriesScore = book.series_id ? seriesScores.get(book.series_id) ?? 0 : 0;
+      scores.set(book.id, seriesScore * SERIES_INHERIT_FRACTION);
     } else {
       // Bayesian average for quality estimation, multiplied by
       // log2(1 + ratingCount) to reward engagement. This makes a
@@ -364,6 +431,7 @@ function runExport(): void {
   try {
     const years = getDistinctYears(db);
     const sources = getDistinctSources(db);
+    const seriesScores = querySeriesAggregateScores(db);
     const meta: Meta = {
       lastUpdated: new Date().toISOString(),
       years: {},
@@ -396,7 +464,7 @@ function runExport(): void {
       }
 
       // Compute Bayesian relevance scores and sort by them (descending)
-      const scores = computeRelevanceScores(filtered);
+      const scores = computeRelevanceScores(filtered, seriesScores);
       const exported = filtered
         .map((row) => toExportedBook(row, scores.get(row.id) ?? 0))
         .sort((a, b) => b.relevanceScore - a.relevanceScore);
