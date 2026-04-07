@@ -61,13 +61,13 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-function productToBookRow(p: AudibleProduct, seriesId: string, seriesTitle: string): BookRow {
+function productToBookRow(p: AudibleProduct, seriesTitle: string): BookRow {
   const seq = p.series?.find((s) => s.title === seriesTitle)?.sequence;
   return {
     id: p.asin,
     title: p.title ?? "",
     subtitle: p.subtitle ?? null,
-    series_id: seriesId,
+    series_name: seriesTitle,
     series_number: seq ? parseFloat(seq) : null,
     author: (p.authors ?? []).map((a) => a.name).join(", "),
     narrator: (p.narrators ?? []).map((n) => n.name).join(", ") || null,
@@ -78,7 +78,7 @@ function productToBookRow(p: AudibleProduct, seriesId: string, seriesTitle: stri
     rating_count: p.rating?.overall_distribution?.num_ratings ?? null,
     description: stripHtml(p.merchandising_summary ?? ""),
     url: `https://www.audible.com/pd/${p.asin}`,
-    is_ai_narrated: 0,
+    is_ai_narrated: false,
   };
 }
 
@@ -196,7 +196,7 @@ async function main() {
         );
 
         for (const p of matched) {
-          const bookRow = productToBookRow(p, series.seriesId, series.seriesTitle);
+          const bookRow = productToBookRow(p, series.seriesTitle);
           const isNew = !seen.has(p.asin);
           seen.add(p.asin);
 
