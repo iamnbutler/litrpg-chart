@@ -8,7 +8,7 @@
  * Commands:
  *   build      Run all pipeline stages (default)
  *   fetch      Run MIGRATE + FETCH stages only
- *   export     Run EXPORT + GUARD stages only
+ *   export     Run EXPORT stage only
  *   classify   Run CLASSIFY + DETECT + SCORE stages only
  *   backfill   Back-populate historical years (exhaustive fetch)
  *
@@ -19,7 +19,6 @@
  *   --all            Backfill all years from 2020 to present
  *   --full           Ignore incremental caches / cursors
  *   --source <name>  Only run one fetcher (e.g. "audible")
- *   --skip-guard     Skip the deploy guard stage
  *   --dry-run        Process data but don't write exports
  *   --help           Show this help message
  */
@@ -43,7 +42,7 @@ Usage: npx tsx scripts/backend/index.ts <command> [options]
 Commands:
   build      Run all pipeline stages (default)
   fetch      Run MIGRATE + FETCH stages only
-  export     Run EXPORT + GUARD stages only
+  export     Run EXPORT stage only
   classify   Run CLASSIFY + DETECT + SCORE stages only
   backfill   Back-populate historical years (exhaustive fetch)
 
@@ -51,7 +50,6 @@ Options (general):
   --year <n>       Target a specific year
   --full           Ignore incremental caches / cursors
   --source <name>  Only run one fetcher (e.g. "audible")
-  --skip-guard     Skip the deploy guard stage
   --dry-run        Process data but don't write exports
   --help           Show this help message
 
@@ -115,9 +113,6 @@ function parseArgs(argv: string[]): ParsedArgs {
 				break;
 			case '--source':
 				options.source = args[++i];
-				break;
-			case '--skip-guard':
-				options.skipGuard = true;
 				break;
 			case '--dry-run':
 				dryRun = true;

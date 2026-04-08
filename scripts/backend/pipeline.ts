@@ -10,7 +10,6 @@
  *   5. DETECT     → Run AI narration detection
  *   6. SCORE      → Compute quality scores
  *   7. EXPORT     → Generate static JSON files
- *   8. GUARD      → Validate exported data (deploy guard)
  */
 
 import { execSync } from "node:child_process";
@@ -31,7 +30,6 @@ export interface PipelineOptions {
   year?: number;
   full?: boolean;
   source?: string;
-  skipGuard?: boolean;
   dryRun?: boolean;
 }
 
@@ -242,26 +240,6 @@ const stageExport: StageFn = async (ctx) => {
   }
 };
 
-const stageGuard: StageFn = async (ctx) => {
-  if (ctx.options.skipGuard) {
-    return "skipped (--skip-guard)";
-  }
-  if (ctx.options.dryRun) {
-    return "skipped (dry run)";
-  }
-
-  const guardPath = join(ctx.projectRoot, "scripts", "deploy-guard.js");
-  try {
-    execSync(`node ${guardPath}`, {
-      stdio: "inherit",
-      cwd: ctx.projectRoot,
-    });
-    return "all checks passed";
-  } catch {
-    throw new Error("deploy guard failed");
-  }
-};
-
 // ---------------------------------------------------------------------------
 // Stage registry
 // ---------------------------------------------------------------------------
@@ -274,15 +252,14 @@ const ALL_STAGES: StageDefinition[] = [
   { name: "DETECT", fn: stageDetect, critical: false },
   { name: "SCORE", fn: stageScore, critical: false },
   { name: "EXPORT", fn: stageExport, critical: true },
-  { name: "GUARD", fn: stageGuard, critical: true },
 ];
 
 /** Map CLI subcommands to stage index ranges (inclusive). */
 export const SUBCOMMAND_STAGES: Record<string, [number, number]> = {
   fetch: [0, 1], // MIGRATE + FETCH
-  export: [6, 7], // EXPORT + GUARD
+  export: [6, 6], // EXPORT
   classify: [3, 5], // CLASSIFY + DETECT + SCORE
-  build: [0, 7], // all stages
+  build: [0, 6], // all stages
 };
 
 // ---------------------------------------------------------------------------

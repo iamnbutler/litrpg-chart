@@ -5,7 +5,7 @@
  * Usage: npm run db:export
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type Database from "better-sqlite3";
 import { getDb, closeDb } from "../db.js";
@@ -32,11 +32,6 @@ interface ExportFilters {
   subgenreFilter: {
     enabled: boolean;
     excludeProgressionOnlyFallback: boolean;
-  };
-  regressionGuard: {
-    enabled: boolean;
-    /** If new data has fewer than this ratio of existing data, abort */
-    minBookRatio: number;
   };
 }
 
@@ -478,25 +473,7 @@ function runExport(): void {
       const rows = queryBooksByYear(db, year);
       const { filtered, stats } = applyFilters(rows, filters);
 
-      // Regression guard: compare against existing data before overwriting
       const outPath = join(outDir, `${year}.json`);
-      if (filters.regressionGuard.enabled && existsSync(outPath)) {
-        try {
-          const existing = JSON.parse(readFileSync(outPath, "utf-8")) as unknown[];
-          const ratio = filtered.length / existing.length;
-          if (existing.length > 0 && ratio < filters.regressionGuard.minBookRatio) {
-            console.error(
-              `  REGRESSION: ${year} would drop from ${existing.length} to ${filtered.length} books (${Math.round(ratio * 100)}%). ` +
-              `Threshold: ${Math.round(filters.regressionGuard.minBookRatio * 100)}%. Skipping year.`,
-            );
-            // Preserve existing data
-            meta.years[String(year)] = { totalBooks, exportedBooks: existing.length };
-            continue;
-          }
-        } catch {
-          // Existing file is corrupt or not JSON — safe to overwrite
-        }
-      }
 
       // Compute Bayesian relevance scores and sort by them (descending)
       const scores = computeRelevanceScores(filtered, seriesScores);

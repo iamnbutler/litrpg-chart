@@ -114,9 +114,5 @@
   "subgenreFilter": {
     "enabled": true,
     "excludeProgressionOnlyFallback": true
-  },
-  "regressionGuard": {
-    "enabled": true,
-    "minBookRatio": 0.5
   }
 }

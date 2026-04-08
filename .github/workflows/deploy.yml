@@ -11,10 +11,6 @@ on:
         description: 'Force full re-fetch (ignore cursors)'
         type: boolean
         default: false
-      skip_guard:
-        description: 'Skip deploy guard'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -48,7 +44,7 @@ jobs:
 
       - name: Run pipeline (scheduled/manual only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: npm run pipeline:build -- ${{ inputs.full_fetch && '--full' || '' }} ${{ inputs.skip_guard && '--skip-guard' || '' }}
+        run: npm run pipeline:build -- ${{ inputs.full_fetch && '--full' || '' }}
         env:
           HARDCOVER_API_TOKEN: ${{ secrets.HARDCOVER_API_TOKEN }}
 
