@@ -2,7 +2,7 @@
 {"asin":"B079MRZR19","name":"The Laboratory","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B079P5X8Q2","name":"The System Apocalypse","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07D4HT412","name":"The Wraith's Haunt: A LitRPG Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
-{"asin":"B07FLTRQMM","name":"The Completionist Chronicles","subgenres":["litrpg","base-building"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
+{"asin":"B07FLTRQMM","name":"The Completionist Chronicles","subgenres":["litrpg","tower-climbing","base-building"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07GVRN95T","name":"Cradle","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07J58GGVV","name":"Succubus","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07MT4JN43","name":"The Ten Realms: A Military Portal Fantasy LitRPG Series","subgenres":["litrpg","cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
@@ -14,18 +14,20 @@
 {"asin":"B07VL5GRXM","name":"Station Cores","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07W6WD2P9","name":"Glendaria Awakens Trilogy","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07WM2VRGQ","name":"Dao of Magic","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
+{"asin":"B07X3L6CPC","name":"Enora Online","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B07X3TZ2YQ","name":"The Wandering Inn","subgenres":["litrpg","crafting"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07X8NXNB5","name":"Dungeon Crafting Series","subgenres":["dungeon","crafting"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07YCQDCCZ","name":"Dungeon World","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07ZWFFH3V","name":"Reborn: Apocalypse","subgenres":["litrpg","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B07ZWG43CH","name":"Spirit Core Series","subgenres":["litrpg","dungeon","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B082PYG79R","name":"Painting the Mists","subgenres":["cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
+{"asin":"B083F48JS4","name":"Way of the Immortals","subgenres":["cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B083FPJB7L","name":"Artorian's Archives","subgenres":["cultivation","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0842JNY7Z","name":"A Dungeon Crafting series","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0849WRZJD","name":"The Adept Archives Series","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B084GLPHCD","name":"Dragon Heart Series","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0899K1YLH","name":"Player Reached the Top Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
-{"asin":"B08BTPWX2W","name":"Silver Fox & The Western Hero","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B08BTPWX2W","name":"Silver Fox & The Western Hero","subgenres":["litrpg","cultivation","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B08CGGXX8C","name":"Street Cultivation","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B08FXQBNDT","name":"Elemental Dungeon","subgenres":["dungeon","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B08GC85J3T","name":"Derelict","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
@@ -34,7 +36,8 @@
 {"asin":"B08TMT91MG","name":"Level Up!","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B08TWGWBQN","name":"The Heavenly Throne","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B08TWHCCVZ","name":"Destiny Cycle","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
-{"asin":"B08V24W214","name":"Beastborne","subgenres":["tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B08V24W214","name":"Beastborne","subgenres":["litrpg","tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B08WHJG2CW","name":"New Arcadia","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B08WJ59784","name":"He Who Fights with Monsters","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B08YK6J5K5","name":"Cinnamon Bun","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0937JMKYV","name":"Dungeon Crawler Carl","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
@@ -43,6 +46,7 @@
 {"asin":"B094VRJFD5","name":"Ocean Slayers Racing","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B095NVLTJN","name":"Towers of Acalia","subgenres":["cultivation","isekai","tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0972V6LXN","name":"The Kingfall Histories","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B097GGNYDR","name":"Isekai Assassin","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B098DKC5ZX","name":"Towers & Rifts","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B098K81KDQ","name":"Death Cultivator","subgenres":["cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B098Q6XG67","name":"Serious Probabilities","subgenres":["dungeon","tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
@@ -85,14 +89,16 @@
 {"asin":"B0BL7Y24BR","name":"Death: Genesis","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0BLT3H2SY","name":"Wandering Cultivator of the Broken Empire","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0BN59BXRV","name":"Final Core","subgenres":["isekai","tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
-{"asin":"B0BN7KJMD3","name":"The System School","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0BN7KJMD3","name":"The System School","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0BPLK1V5D","name":"Victor of Tucson","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0BQCMV8HX","name":"Phantasm","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0BR88KGXN","name":"Mark of the Crijik Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0BR88KGXN","name":"Mark of the Crijik Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0BRCCM9GR","name":"Apocalypse Parenting","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0BRY3HZY8","name":"Parnival Wonderland","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0BS761F7K","name":"System Misinterpret","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0BSPNZR1V","name":"The Infinity Construct","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0BTJDFKFP","name":"Leveling Up the World","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0BTMGDWLW","name":"Order & Chaos","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0BTQ18SJ2","name":"The Tower Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0BTSCKNGX","name":"Tree of Aeons","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0BV3CNHF9","name":"The Path of Ascension","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -104,11 +110,11 @@
 {"asin":"B0BZQC4QTJ","name":"My Children from Another World","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0C15MCF8J","name":"Rebels Path","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0C1S6YD6N","name":"Legend of Raven","subgenres":["cultivation","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
-{"asin":"B0C1SJYL8R","name":"Path of Lazy Immortal","subgenres":["cultivation","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0C1SJYL8R","name":"Path of Lazy Immortal","subgenres":["cultivation","isekai","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0C1ZHYFYR","name":"My Werewolf System","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0C2DF6Q73","name":"Highway Hero","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0C42XDDJ1","name":"Dragon Idol's Reincarnation Tale","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
-{"asin":"B0C4LC15M3","name":"The Stargazer's War","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0C4LC15M3","name":"The Stargazer's War","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0C4T7FLY9","name":"Gravity and Divinity System","subgenres":["dungeon","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0C5D26SPY","name":"Unblood","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0C5QPG4SK","name":"Speedrunning the Multiverse Series","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
@@ -122,12 +128,12 @@
 {"asin":"B0CDBT4MTT","name":"Isekai Blacksmith","subgenres":["litrpg","isekai","crafting"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CDCBLQTF","name":"The Realmwalkers","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CDWPCS6P","name":"Apocalypse Revisited","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0CG6SCC4N","name":"Sylver Seeker","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0CG6SCC4N","name":"Sylver Seeker","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0CGZXJF3B","name":"System Apocalypse Omnibus","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CGZYP3TY","name":"The Fallen World","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CH3SK1S9","name":"I'm Not the Hero","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CHF1R398","name":"Magical Fusion","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0CHF3F9JK","name":"Outworlder's Blood","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0CHF3F9JK","name":"Outworlder's Blood","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0CHJ4B3CL","name":"A Cultivation Gamelit Novel","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CHRN5P1D","name":"Rise of Kers","subgenres":["litrpg","dungeon","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CHVXJDHF","name":"System Bound","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -137,7 +143,8 @@
 {"asin":"B0CK2956B3","name":"Heavy Metal Mana","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CK91QZ38","name":"Dungeon Diving","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CKBG53G1","name":"Climbing the Ranks","subgenres":["litrpg","cultivation","tower-climbing"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0CKBL9W6F","name":"Dungeon Runner","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0CKBL9W6F","name":"Dungeon Runner","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0CKLXSY4B","name":"Awakening the Angel System","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0CLN9SBS2","name":"Road to Mastery","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CM968Q8Y","name":"System Apocalypse: Kismet","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CMHWL51Y","name":"Terminate the Other World!","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
@@ -146,7 +153,7 @@
 {"asin":"B0CNVNX6K7","name":"Theos","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CP4FK4XH","name":"Wish Upon the Stars","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CPHQTMHN","name":"Book of the Dead","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0CPLN9WDR","name":"Rogue Ascension","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0CPLN9WDR","name":"Rogue Ascension","subgenres":["litrpg","dungeon","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CPXZMY8Q","name":"Reborn as the Black Knight","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CQ8YW3X3","name":"This Academy Extra","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CQLLLNFP","name":"The Hunter’s Code","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -156,15 +163,16 @@
 {"asin":"B0CRK7VF72","name":"The Connected System","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CRV2CFHY","name":"The Game at Carousel","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0CRW45TV4","name":"Dungeon Life","subgenres":["litrpg","dungeon","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0CS71WPDK","name":"Healer's Way","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0CSKK4CNT","name":"Immortality Starts With Generosity","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CT4ZDGSP","name":"Sponsored Apocalypse","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CTD39DDZ","name":"Unintended Cultivator","subgenres":["cultivation","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0CTMWB348","name":"The Iron Guild","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0CTMWB348","name":"The Iron Guild","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0CTNLB5HY","name":"Garden Core","subgenres":["dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0CTT49B8Y","name":"Apocalypse Revisited","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CV866P5K","name":"Return of the Runebound Professor","subgenres":["isekai","academy"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0CVPWM949","name":"The Last Psion","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0CW5KPDGX","name":"Ikarion Isekai Anime Series","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0CW5KPDGX","name":"Ikarion Isekai Anime Series","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CWNH6R72","name":"Only Villains Do That","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CXDCW7BV","name":"The Last Dragon Rider","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0CXSZR7YN","name":"Empress","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
@@ -177,17 +185,17 @@
 {"asin":"B0D212LWVZ","name":"ShipCore","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0D225VLDG","name":"Reborn","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D2H5DTJT","name":"Arc","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0D2HFZ5FS","name":"A Shelter in Spacetime","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0D2HFZ5FS","name":"A Shelter in Spacetime","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0D2HGC5TC","name":"Cosmic Games","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D2M6MY8H","name":"A Gamer's Guide to Beating the Tutorial","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D345JDRC","name":"Resistance Above Magic","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D349K6W3","name":"Magical Girl Undergrad","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D35GXVYH","name":"The Exlian Syndrome Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0D45GZ49Q","name":"Newly Summoned Demoness","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0D45Z8CVY","name":"Magic Kingdom at War","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0D45GZ49Q","name":"Newly Summoned Demoness","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0D45Z8CVY","name":"Magic Kingdom at War","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0D4W8KKLV","name":"System Reborn","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D4Y3S4WQ","name":"Meet Your Maker","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0D5XY5V2X","name":"Death of the Party","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0D5XY5V2X","name":"Death of the Party","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0D5XZD13R","name":"Deadworld Isekai","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D5YXL6L5","name":"Bog Standard Isekai","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0D665VPJV","name":"Franklin U 2","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -203,61 +211,92 @@
 {"asin":"B0D8Q2KMSM","name":"System Apocalypse: Liberty","subgenres":["system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0D8SCDQ5R","name":"Iron Tyrant","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0D8T73RPH","name":"Nocturne","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0D93QGXSS","name":"Warriors of Valhalla","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0D93QGXSS","name":"Warriors of Valhalla","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0D96JYG4X","name":"Savage Awakening","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0D9GTTBHJ","name":"Arcane Veterinarian","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D9KG6YFL","name":"Nameless Sovereign","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0D9KMYVW5","name":"Armed and Armored","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0DB4NP195","name":"The Soulbound Saga","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0DCFDTVMB","name":"Quest and Conquer","subgenres":["litrpg","isekai","time-loop"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DB5BWT68","name":"My Demonic Farm Series","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DBZ13GN4","name":"Cherno Caster","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DCFDTVMB","name":"Quest and Conquer","subgenres":["litrpg","isekai","time-loop"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0DFC3DHBJ","name":"The Big Bad Wolf","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0DFM21SQH","name":"The Village","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0DFM21SQH","name":"The Village","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0DG3ZTJXC","name":"Black Market","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0DG4W9JYZ","name":"Rise of the Living Forge","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0DGRNSGL5","name":"Sky Lord","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DGRNSGL5","name":"Sky Lord","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0DH8KFC95","name":"Modern Patriarch","subgenres":["cultivation","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0DJ8J315X","name":"Spellbreaker Climbs the Tower","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0DJH66HCH","name":"Hell Difficulty Tutorial","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
-{"asin":"B0DJQLRXY3","name":"Kaito, Seriously? Another Series?","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0DK5T2455","name":"Archmage Reborn","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0DLL8GDLL","name":"Hunting and Herbalism","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0DNM57D16","name":"Pandora Unchained","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DJQLRXY3","name":"Kaito, Seriously? Another Series?","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DK5T2455","name":"Archmage Reborn","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DLL8GDLL","name":"Hunting and Herbalism","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DNM57D16","name":"Pandora Unchained","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0DNPRWSQY","name":"The Dark Healer","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0DP364XQW","name":"Museum Core","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0DPH43383","name":"Lord of The System","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
-{"asin":"B0DPZQBLMD","name":"Provenance: A Cultivation Story","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0DQDSB8S9","name":"Fight. Level. Survive.","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DPZQBLMD","name":"Provenance: A Cultivation Story","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DQDSB8S9","name":"Fight. Level. Survive.","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0DQTJYV54","name":"Son of Flame","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0DRDQ3Q7D","name":"MagiCraft Master","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
-{"asin":"B0DTY5PZR5","name":"Overpowered Wizard","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DRDQ3Q7D","name":"MagiCraft Master","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DS2M8YQL","name":"Super Genetics","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DSGG2X63","name":"Glass Kanin","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DSHLVSSQ","name":"Demonic Magician","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DSPNG3FG","name":"Draka","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DTY5PZR5","name":"Overpowered Wizard","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
+{"asin":"B0DTY73JX8","name":"God Game","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DV6VQQHF","name":"Level Up Destiny","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0DVGXNT9L","name":"Corpo Age","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DVLT6SGW","name":"The One Who Changes the Future","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
+{"asin":"B0DWG271YD","name":"The Forerunner","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DWN23YBS","name":"The Last Portal Jumper","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0DX1ZW4HJ","name":"The Bee Dungeon","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
+{"asin":"B0DX2F56BF","name":"Apocalypse Arena","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DXVW9PX4","name":"Blood Code","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0DXZVH7KS","name":"Isekai Hero","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DY14HWCG","name":"Blossoming Path","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
+{"asin":"B0DY7KJ4G1","name":"The Lost Bloodline","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DY7VKKVQ","name":"Stellar Frontier","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0DYF6G2SB","name":"The Silent Archmage","subgenres":["academy"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0DZBDJP6M","name":"The Coming of God of Death","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F1D4WTXM","name":"Taming Destiny","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F1T4LJ7T","name":"Amber the Cursed Berserker","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F1YXWGR4","name":"Scathing Reviewer","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0F2M65B2Z","name":"Chronicles of the Isekai’d Hexinblade","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F2RZZ19L","name":"Salvage System","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F339GPB9","name":"Apocalypse Healer","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F3HNQB5Q","name":"Path of Dragons","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F47YPY5F","name":"Banned","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0F4WTVSX1","name":"A LitRPG Offworlder Saga: The Weak to Strong Hero Who Levels Up Quickly","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F59MR71C","name":"Wild Era","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F66FK8S5","name":"Grand System Vending","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F7H8VGD1","name":"The Forsworn Oath","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F7HTNH1H","name":"Resurrection! A Ridiculous Vampire Isekai","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0F7HXZTM9","name":"Unwilling Eldritch Horror of Fortune","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F7ZQ1Q9K","name":"We Are Legion","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F82VC7GG","name":"Cultivation Nerd","subgenres":["cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F8Q8XVPG","name":"World's Strongest Warrior","subgenres":["litrpg","cultivation","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0F8QMLV9T","name":"1% Lifesteal","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F8R5JKCS","name":"My Big Goblin Space Program","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F8WKBDWK","name":"The Hero Slayers","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0F9F9K1V7","name":"Aetherforged","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0F9KKHR9N","name":"Author's Nightmare","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0F9R3VXW7","name":"Violet Reborn","subgenres":["dungeon","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0FB9M5JC6","name":"Mage Tank","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0FBX4HNFR","name":"Magus Reborn","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0FC2Y6FPH","name":"Dual Class","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0FCFBN3HZ","name":"Demonic Sect Elder","subgenres":["litrpg","cultivation","isekai","wuxia"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0FD3FK1XJ","name":"A Fantasy LitRPG Adventure","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0FDBHN52Y","name":"Creature Farm","subgenres":["litrpg","isekai","monster-mc"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0FFB9TS98","name":"Wayward","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0FG3GTWJ5","name":"Skill Hunter","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0FG7Y638J","name":"The Amatherean Tales","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0FGDYWNNR","name":"Revolutionizing the Magical World, One Sorceress at a Time","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0FH6CBK44","name":"The New Dark Lord","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0FH6HV6Y8","name":"Shadowborn Exile","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
-{"asin":"B0FHHWXTGN","name":"You Are Summoned","subgenres":["litrpg","academy"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0FN3M8YTG","name":"Portal Warrior","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0FHHWXTGN","name":"You Are Summoned","subgenres":["litrpg","isekai","academy"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0FHPKG2BC","name":"Apocalypse Rebirth","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
+{"asin":"B0FN3M8YTG","name":"Portal Warrior","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0FNMH6LZB","name":"The System Integration Chronicles","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0FP2W1TTM","name":"Totally Spiritual","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0FPRTYWFP","name":"Cultivation Is a Game","subgenres":["litrpg","cultivation"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -285,6 +324,7 @@
 {"asin":"B0G65WJZWG","name":"Isekai Terry","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0G7CSJ5FS","name":"Fated and Bound","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0G87MKSDZ","name":"Queen of Conquest","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0GF7NRR9F","name":"Isekai Exorcist","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0GGBV5JH3","name":"Dungeon Brawler","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0GHWC8P7J","name":"System Reset","subgenres":["litrpg","dungeon","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0GJ433VG3","name":"A Titan’s Core","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
@@ -305,6 +345,7 @@
 {"asin":"B0GTZ6WY9L","name":"Punish The System","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0GV3B8JPH","name":"Dungeon Apocalypse","subgenres":["litrpg","cultivation","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0GVGRR842","name":"Level up - It's an RPG World","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
+{"asin":"B0GWCYTLTT","name":"Path of Violence","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":null}
 {"asin":"B0GWGS891M","name":"The Hunter's Code","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:44:08.969Z"}
 {"asin":"B0GX2Y1LK3","name":"The Augment's Code","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0GYG8ZW1C","name":"Twilight Company","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
@@ -342,12 +383,14 @@
 {"asin":"B0H7FGLTVX","name":"Core Chaos","subgenres":["litrpg","dungeon"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0H88BGV71","name":"Spellcaster Ted","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0H8C9QJ4D","name":"Ceaseless Horizons","subgenres":["litrpg","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0H8CD4FY9","name":"Overpowered Demon Lord Slayer","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
 {"asin":"B0H8DK61JX","name":"Calculating Cultivation","subgenres":["cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0H8TSLCKV","name":"Endgame Earth","subgenres":["litrpg","system-apocalypse"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0H971GLFL","name":"Towers of Entropy","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0HB492K14","name":"Soulbound Steel","subgenres":["litrpg","cultivation","isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0HBD6DZ84","name":"Death Premium","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:24:17.323Z"}
 {"asin":"B0HBW14BPX","name":"Trailer Trash Apocalypse","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
-{"asin":"B0HCYV3VG9","name":"The Second Son Saga","subgenres":["base-building"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
+{"asin":"B0HCYV3VG9","name":"The Second Son Saga","subgenres":[],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:49:30.665Z"}
 {"asin":"B0HDC4D23X","name":"Demonic City Builder","subgenres":["litrpg","base-building"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
 {"asin":"B0HDNNWW6X","name":"Magic Dungeon Academy","subgenres":["isekai"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T14:30:24.087Z"}
+{"asin":"B0HDXR8F8R","name":"They Thought Wrong","subgenres":["litrpg"],"classifiedBy":"keyword","include":null,"lastClosedAt":"2026-08-12T16:13:01.402Z"}
