@@ -9,25 +9,27 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: npm
+          bun-version: latest
 
-      - run: npm ci
+      - run: bun install --frozen-lockfile
 
-      - name: Type-check backend
-        run: npx tsc --project tsconfig.backend.json --noEmit
+      - name: Type-check pipeline + contract
+        run: bun run check:pipeline
 
-      - name: Type-check frontend
-        run: npx svelte-kit sync && npx svelte-check --tsconfig ./tsconfig.json
+      - name: Tests
+        run: bun run test
 
-      - name: Run tests
-        run: npm test
+      - name: Export static data from committed corpus
+        run: bun run pipeline export
 
-      - name: Build frontend
-        run: npx vite build
+      - name: Type-check web
+        run: bun run check:web
+
+      - name: Build web
+        run: bun run build

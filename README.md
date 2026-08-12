@@ -1,42 +1,28 @@
-# sv
+# LitRPG Chart
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Seasonal chart of LitRPG / progression-fantasy audiobooks — [nate.rip/litrpg-chart](https://nate.rip/litrpg-chart/).
 
-## Creating a project
+The catalog lives in this repo as newline-delimited JSON (`data/*.ndjson`), updated weekly by a scheduled pipeline that talks to the Audible catalog API, and rendered by a static SvelteKit app. See [CLAUDE.md](CLAUDE.md) for architecture rules and [docs/rebuild-plan.md](docs/rebuild-plan.md) for the design rationale.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Development
 
-```sh
-# create a new project
-npx sv create my-app
+```bash
+bun install
+bun run pipeline export   # generate packages/web/static/data from the committed corpus
+bun run dev               # web app on localhost
 ```
 
-To recreate this project with the same configuration:
+Refreshing data locally (optional; the weekly workflow does this in CI):
 
-```sh
-# recreate this project
-npx sv@0.14.0 create --template minimal --types ts --no-install /Users/natebutler/Code/litrpg-chart
+```bash
+bun run pipeline run --budget 300
 ```
 
-## Developing
+## Layout
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+| Path | What |
+|---|---|
+| `data/` | Canonical corpus (committed NDJSON) + `corrections.ndjson` for manual overrides |
+| `packages/contract` | Zod schemas of the exported JSON — the pipeline↔web boundary |
+| `packages/pipeline` | Discover / close-series / hydrate / classify / validate / export |
+| `packages/web` | SvelteKit SPA (GitHub Pages) |

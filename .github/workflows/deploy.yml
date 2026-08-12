@@ -1,16 +1,13 @@
 name: Deploy to GitHub Pages
 
+# Deploys are a pure function of the repo: export from the committed corpus,
+# build, publish. No network fetches, no caches to evict. Data freshness is
+# data.yml's job; its weekly commit triggers this workflow automatically.
+
 on:
   push:
     branches: [main]
-  schedule:
-    - cron: '0 15 * * 1' # Every Monday at 3pm UTC
   workflow_dispatch:
-    inputs:
-      full_fetch:
-        description: 'Force full re-fetch (ignore cursors)'
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -24,36 +21,25 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22
-          cache: npm
+          bun-version: latest
 
-      - name: Restore database cache
-        uses: actions/cache@v4
-        with:
-          path: data/books.db
-          key: books-db-${{ github.run_id }}
-          restore-keys: books-db-
+      - run: bun install --frozen-lockfile
 
-      - run: npm ci
-
-      - name: Run pipeline (scheduled/manual only)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: npm run pipeline:build -- ${{ inputs.full_fetch && '--full' || '' }}
-        env:
-          HARDCOVER_API_TOKEN: ${{ secrets.HARDCOVER_API_TOKEN }}
+      - name: Export static data from committed corpus
+        run: bun run pipeline export
 
       - name: Build site
-        run: npx vite build
+        run: bun run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: packages/web/build
 
   deploy:
     needs: build

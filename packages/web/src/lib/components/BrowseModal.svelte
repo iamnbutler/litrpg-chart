@@ -15,7 +15,7 @@
 		onClose: () => void;
 		onAuthorClick: (name: string) => void;
 		onNarratorClick: (name: string) => void;
-		onSeriesClick: (series: string) => void;
+		onSeriesClick: (seriesAsin: string) => void;
 	} = $props();
 
 	let closing = $state(false);
@@ -55,7 +55,7 @@
 				<p class="modal-empty">No books found.</p>
 			{:else}
 				<div class="modal-grid">
-					{#each books as book (book.id)}
+					{#each books as book (book.asin)}
 						<BookCard {book} {onAuthorClick} {onNarratorClick} {onSeriesClick} />
 					{/each}
 				</div>

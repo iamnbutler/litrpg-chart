@@ -1,36 +1,23 @@
-export type Subgenre =
-	| 'litrpg'
-	| 'cultivation'
-	| 'dungeon'
-	| 'isekai'
-	| 'tower-climbing'
-	| 'system-apocalypse'
-	| 'base-building'
-	| 'time-loop'
-	| 'academy'
-	| 'crafting'
-	| 'monster-mc'
-	| 'wuxia';
+/**
+ * UI-side types: the data shapes come from @litrpg/contract (the pipeline
+ * validates every exported file against the same schemas). This module only
+ * adds presentation concerns — labels, colors, filter state.
+ */
+import type { Subgenre } from '@litrpg/contract';
 
-export interface Book {
-	id: string;
-	title: string;
-	series: string;
-	seriesNumber: number | null;
-	author: string;
-	narrator?: string;
-	releaseDate: string; // ISO date
-	coverUrl?: string;
-	audiobookLength?: string;
-	subgenres: Subgenre[];
-	description: string;
-	url?: string;
-	rating?: number;
-	ratingCount?: number;
-	relevanceScore: number;
-}
+export type { ExportedBook as Book, Meta, SeriesIndex, SeriesIndexEntry, Subgenre } from '@litrpg/contract';
 
 export type SortMode = 'relevance' | 'date';
+
+export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
+
+export interface ActiveFilter {
+	type: 'author' | 'narrator' | 'series';
+	/** series ASIN, or author/narrator slug — what goes in the URL. */
+	value: string;
+	/** Human-readable name for the modal header. */
+	label: string;
+}
 
 export const subgenreLabels: Record<Subgenre, string> = {
 	litrpg: '⚔️ LitRPG',
@@ -65,9 +52,12 @@ export const subgenreColors: Record<Subgenre, string> = {
 	wuxia: 'var(--green-dim, #98971a)'
 };
 
-export type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
-
-export interface ActiveFilter {
-	type: 'author' | 'narrator' | 'series';
-	value: string;
+/** "12 hrs 5 mins" from runtime minutes, matching v1's Audible-style label. */
+export function formatRuntime(min: number | null): string | null {
+	if (min == null || min <= 0) return null;
+	const h = Math.floor(min / 60);
+	const m = min % 60;
+	if (h === 0) return `${m} mins`;
+	if (m === 0) return `${h} hrs`;
+	return `${h} hrs ${m} mins`;
 }

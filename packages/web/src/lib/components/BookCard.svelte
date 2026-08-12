@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Book } from '$lib/types';
-	import { subgenreLabels, subgenreColors } from '$lib/types';
+	import { subgenreLabels, subgenreColors, formatRuntime } from '$lib/types';
 
 	let { book, onAuthorClick, onNarratorClick, onSeriesClick }: {
 		book: Book;
 		onAuthorClick?: (name: string) => void;
 		onNarratorClick?: (name: string) => void;
-		onSeriesClick?: (series: string) => void;
+		onSeriesClick?: (seriesAsin: string) => void;
 	} = $props();
 
 	const released = $derived(new Date(book.releaseDate) <= new Date());
@@ -16,7 +16,8 @@
 		return new Date(dateStr).toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
-			year: 'numeric'
+			year: 'numeric',
+			timeZone: 'UTC'
 		});
 	}
 
@@ -29,7 +30,8 @@
 		return Math.abs(hash) % 360;
 	}
 
-	const hue = $derived(seriesHue(book.series));
+	const hue = $derived(seriesHue(book.seriesName ?? book.title));
+	const runtime = $derived(formatRuntime(book.runtimeMin));
 </script>
 
 <a
@@ -41,7 +43,7 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{#each book.author.split(', ') as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each} {#if book.narrator}<span class="narrator">with {#each book.narrator.split(', ') as name, i}{#if i > 0}, {/if}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name.trim()); }}>{name.trim()}</button>{:else}{name.trim()}{/if}{/each}</span>{/if}</p>
+		<p class="author">{#each book.authors as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name); }}>{name}</button>{:else}{name}{/if}{/each} {#if book.narrators.length > 0}<span class="narrator">with {#each book.narrators as name, i}{#if i > 0}, {/if}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name); }}>{name}</button>{:else}{name}{/if}{/each}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}
@@ -53,15 +55,15 @@
 			<p class="description">{book.description}</p>
 		{/if}
 
-		{#if book.series}
+		{#if book.seriesAsin && book.seriesName}
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.series); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.series); }}}>{book.series}{#if book.seriesNumber} &ndash; Book {book.seriesNumber}{/if}</span>
+			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }}}>{book.seriesName}{#if book.seriesPosition} &ndash; Book {book.seriesPosition}{/if}</span>
 		{/if}
 		<p class="meta-line">
 			{formatDate(book.releaseDate)}
-			{#if book.audiobookLength}
+			{#if runtime}
 				<span class="separator">&middot;</span>
-				<span class="length">{book.audiobookLength}</span>
+				<span class="length">{runtime}</span>
 			{/if}
 		</p>
 	</div>
@@ -71,8 +73,8 @@
 			<img src={book.coverUrl} alt={book.title} loading="lazy" />
 		{:else}
 			<div class="cover-placeholder" style="--hue: {hue}">
-				<span class="cover-number">#{book.seriesNumber ?? '?'}</span>
-				<span class="cover-series">{book.series}</span>
+				<span class="cover-number">#{book.seriesPosition ?? '?'}</span>
+				<span class="cover-series">{book.seriesName ?? book.title}</span>
 			</div>
 		{/if}
 
