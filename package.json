@@ -1,38 +1,20 @@
 {
 	"name": "litrpg-chart",
 	"private": true,
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "module",
+	"workspaces": ["packages/*"],
 	"scripts": {
-		"dev": "vite dev",
-		"pipeline": "tsx scripts/backend/index.ts",
-		"pipeline:fetch": "tsx scripts/backend/index.ts fetch",
-		"pipeline:export": "tsx scripts/backend/index.ts export",
-		"pipeline:classify": "tsx scripts/backend/index.ts classify",
-		"pipeline:build": "tsx scripts/backend/index.ts build",
-		"pipeline:backfill": "tsx scripts/backend/index.ts backfill",
-		"build": "npm run pipeline:build && vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"dev": "bun run --cwd packages/web dev",
+		"build": "bun run --cwd packages/web build",
+		"check": "bun run check:pipeline && bun run check:web",
+		"check:pipeline": "bunx tsc --project packages/pipeline/tsconfig.json --noEmit && bunx tsc --project packages/contract/tsconfig.json --noEmit",
+		"check:web": "bun run --cwd packages/web check",
+		"test": "bunx vitest run --root packages/pipeline",
+		"pipeline": "bun packages/pipeline/src/cli.ts"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/kit": "^2.50.2",
-		"@sveltejs/vite-plugin-svelte": "^6.2.4",
-		"@types/better-sqlite3": "^7.6.13",
-		"svelte": "^5.54.0",
-		"svelte-check": "^4.4.2",
-		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
-		"vite": "^7.3.1",
 		"vitest": "^4.1.2"
-	},
-	"dependencies": {
-		"@sveltejs/adapter-static": "^3.0.10",
-		"better-sqlite3": "^12.8.0"
 	}
 }

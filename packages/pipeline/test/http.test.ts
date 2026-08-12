@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createHttpClient, HttpError, type FetchFn } from "./http.ts";
+import { createHttpClient, HttpError, type FetchFn } from "../src/http.ts";
 
 // Suppress stderr logging during tests
 beforeEach(() => {

@@ -1,12 +1,18 @@
 node_modules
 
-# Output
+# SvelteKit / Vite
+packages/web/.svelte-kit
+packages/web/build
 .output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Pipeline scratch (SQLite is a transient index rebuilt from data/*.ndjson)
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+.pipeline-tmp/
 
 # OS
 .DS_Store
@@ -18,22 +24,5 @@ Thumbs.db
 !.env.example
 !.env.test
 
-# Database
-/data/*.db
-/data/*.db-wal
-/data/*.db-shm
-
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
-# SQLite database
-/data/*.db
-/data/*.db-journal
-/data/*.db-wal
-
 # Worktrees
 .worktrees
-
-# Generated static data (built by pipeline, but committed for backfill data)
-# /static/data/*.json
