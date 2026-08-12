@@ -1,0 +1,32 @@
+{
+	"budgetDefault": 600,
+	"discovery": {
+		"comment": "Category IDs are Audible US browse nodes; verified at smoke-test time via /catalog/categories. Keyword slices are scoped enough to accept all results; category browses accept only text-matching products.",
+		"categories": [
+			{ "id": "18580607011", "name": "Fantasy", "pages": 3 },
+			{ "id": "18580628011", "name": "Science Fiction", "pages": 2 }
+		],
+		"keywords": [
+			{ "q": "litrpg", "pages": 3 },
+			{ "q": "gamelit", "pages": 2 },
+			{ "q": "progression fantasy", "pages": 3 },
+			{ "q": "cultivation fantasy", "pages": 2 },
+			{ "q": "dungeon core", "pages": 2 },
+			{ "q": "system apocalypse", "pages": 2 },
+			{ "q": "level up fantasy", "pages": 2 },
+			{ "q": "xianxia", "pages": 2 },
+			{ "q": "isekai", "pages": 2 },
+			{ "q": "tower climb fantasy", "pages": 1 }
+		]
+	},
+	"closure": {
+		"activeWindowDays": 548,
+		"activeRefreshDays": 7,
+		"dormantRefreshDays": 30
+	},
+	"validate": {
+		"maxBookShrinkPct": 1,
+		"maxSeriesShrinkPct": 1,
+		"maxNullRegressPct": 2
+	}
+}
