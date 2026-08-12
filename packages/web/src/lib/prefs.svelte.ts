@@ -21,6 +21,7 @@ interface PrefsV1 {
 	genres: Subgenre[];
 	seriesOnly: boolean;
 	longRunningOnly: boolean;
+	mySeriesOnly: boolean;
 }
 
 const DEFAULTS: PrefsV1 = {
@@ -31,7 +32,8 @@ const DEFAULTS: PrefsV1 = {
 	sort: 'relevance',
 	genres: [],
 	seriesOnly: false,
-	longRunningOnly: false
+	longRunningOnly: false,
+	mySeriesOnly: false
 };
 
 function load(): PrefsV1 {
@@ -93,8 +95,19 @@ class Prefs {
 		this.#persist();
 	}
 
+	get mySeriesOnly(): boolean {
+		return this.#data.mySeriesOnly;
+	}
+	set mySeriesOnly(v: boolean) {
+		this.#data.mySeriesOnly = v;
+		this.#persist();
+	}
+
 	get watchedSeries(): Set<string> {
 		return new Set(this.#data.watchedSeries);
+	}
+	isWatched(seriesAsin: string): boolean {
+		return this.#data.watchedSeries.includes(seriesAsin);
 	}
 	toggleWatchedSeries(seriesAsin: string): void {
 		this.#data.watchedSeries = toggleIn(this.#data.watchedSeries, seriesAsin);
