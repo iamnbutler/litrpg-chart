@@ -56,7 +56,7 @@
 				<input type="checkbox" checked={mySeriesOnly} onchange={() => onMySeriesChange(!mySeriesOnly)} />
 				<span class="label-text">
 					My series
-					<span class="label-desc">{watchedCount === 0 ? 'Watch a series from its page first' : `Only the ${watchedCount} series you watch`}</span>
+					<span class="label-desc">{watchedCount === 0 ? 'Add a series to your collection first' : `Only the ${watchedCount} series in your collection`}</span>
 				</span>
 			</label>
 			{#if hiddenCount > 0}

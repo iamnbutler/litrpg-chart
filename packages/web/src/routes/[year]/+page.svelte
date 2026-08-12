@@ -207,7 +207,7 @@
 	<header>
 		<div class="header-inner">
 			<h1 class="title">LitRPG Chart</h1>
-			<a class="tierlist-link" href="{base}/tierlist" title="My tier list">Tier list{prefs.tierCount > 0 ? ` (${prefs.tierCount})` : ''}</a>
+			<a class="tierlist-link" href="{base}/collection" title="My collection">Collection{prefs.watchedSeries.size > 0 ? ` (${prefs.watchedSeries.size})` : ''}</a>
 			<div class="header-nav">
 				<SeasonNav
 					{activeQuarter}

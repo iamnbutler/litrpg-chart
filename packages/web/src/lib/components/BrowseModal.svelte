@@ -21,21 +21,6 @@
 		onCardClick?: (book: Book) => void;
 	} = $props();
 
-	const seriesOnTierList = $derived(
-		filter.type === 'series' && prefs.tierRowOf('series', filter.value) !== null
-	);
-
-	function toggleSeriesTier() {
-		if (filter.type !== 'series') return;
-		if (seriesOnTierList) prefs.removeTierEntry('series', filter.value);
-		else
-			prefs.addTierEntry({
-				kind: 'series',
-				id: filter.value,
-				title: filter.label,
-				coverUrl: books[0]?.coverUrl ?? null
-			});
-	}
 
 	let closing = $state(false);
 
@@ -68,10 +53,7 @@
 			{#if filter.type === 'series'}
 				{@const watched = prefs.isWatched(filter.value)}
 				<button class="watch-btn" class:watched onclick={() => prefs.toggleWatchedSeries(filter.value)}>
-					{watched ? '★ Watching' : '☆ Watch'}
-				</button>
-				<button class="watch-btn" class:watched={seriesOnTierList} onclick={toggleSeriesTier}>
-					{seriesOnTierList ? '✓ Tier list' : '+ Tier list'}
+					{watched ? '★ In collection' : '+ Collection'}
 				</button>
 			{/if}
 			<span class="modal-count">{books.length} title{books.length !== 1 ? 's' : ''}</span>

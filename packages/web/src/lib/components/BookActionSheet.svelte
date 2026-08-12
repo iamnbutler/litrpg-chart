@@ -16,29 +16,14 @@
 		if (e.key === 'Escape') handleClose();
 	}
 
-	const bookOnList = $derived(prefs.tierRowOf('book', book.asin) !== null);
-	const seriesOnList = $derived(
-		book.seriesAsin ? prefs.tierRowOf('series', book.seriesAsin) !== null : false
-	);
+	const inCollection = $derived(book.seriesAsin ? prefs.isWatched(book.seriesAsin) : false);
+	const read = $derived(prefs.isRead(book.asin));
 	const hidden = $derived(
 		book.seriesAsin ? prefs.hiddenSeries.has(book.seriesAsin) : prefs.hiddenBooks.has(book.asin)
 	);
 
-	function toggleBook() {
-		if (bookOnList) prefs.removeTierEntry('book', book.asin);
-		else prefs.addTierEntry({ kind: 'book', id: book.asin, title: book.title, coverUrl: book.coverUrl });
-	}
-
-	function toggleSeries() {
-		if (!book.seriesAsin) return;
-		if (seriesOnList) prefs.removeTierEntry('series', book.seriesAsin);
-		else
-			prefs.addTierEntry({
-				kind: 'series',
-				id: book.seriesAsin,
-				title: book.seriesName ?? book.title,
-				coverUrl: book.coverUrl
-			});
+	function toggleCollection() {
+		if (book.seriesAsin) prefs.toggleWatchedSeries(book.seriesAsin);
 	}
 
 	function toggleHide() {
@@ -73,17 +58,17 @@
 				<span class="action-label">Open on Audible</span>
 			</a>
 
-			<button class="action" class:active={bookOnList} onclick={toggleBook}>
-				<span class="action-icon">{bookOnList ? '✓' : '+'}</span>
-				<span class="action-label">{bookOnList ? 'Book on tier list' : 'Add book to tier list'}</span>
-			</button>
-
 			{#if book.seriesAsin}
-				<button class="action" class:active={seriesOnList} onclick={toggleSeries}>
-					<span class="action-icon">{seriesOnList ? '✓' : '+'}</span>
-					<span class="action-label">{seriesOnList ? 'Series on tier list' : 'Add series to tier list'}</span>
+				<button class="action" class:active={inCollection} onclick={toggleCollection}>
+					<span class="action-icon">{inCollection ? '★' : '+'}</span>
+					<span class="action-label">{inCollection ? 'Series in collection' : 'Add series to collection'}</span>
 				</button>
 			{/if}
+
+			<button class="action" class:active={read} onclick={() => prefs.toggleRead(book.asin)}>
+				<span class="action-icon">{read ? '✓' : '○'}</span>
+				<span class="action-label">{read ? 'Read' : 'Mark as read'}</span>
+			</button>
 
 			<button class="action danger" onclick={toggleHide}>
 				<span class="action-icon">✕</span>
@@ -91,8 +76,8 @@
 			</button>
 		</div>
 
-		{#if bookOnList || seriesOnList || prefs.tierCount > 0}
-			<a class="tierlist-link" href="{base}/tierlist">Your tier list ({prefs.tierCount}) &rarr;</a>
+		{#if prefs.watchedSeries.size > 0}
+			<a class="collection-link" href="{base}/collection">Your collection ({prefs.watchedSeries.size}) &rarr;</a>
 		{/if}
 	</div>
 </div>
@@ -181,6 +166,7 @@
 		overflow: hidden;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 	}
 
@@ -257,7 +243,7 @@
 		color: var(--red-bright);
 	}
 
-	.tierlist-link {
+	.collection-link {
 		display: block;
 		margin-top: 0.75rem;
 		padding-top: 0.75rem;
@@ -269,7 +255,7 @@
 		text-align: center;
 	}
 
-	.tierlist-link:hover {
+	.collection-link:hover {
 		text-decoration: underline;
 	}
 

@@ -12,32 +12,39 @@ import type { SortMode } from './types';
 
 const STORAGE_KEY = 'litrpg-chart:prefs';
 
-/** Ranked rows of the tier list, top to bottom. 'shelf' holds unplaced adds. */
+/** Ranked rows of the tier list, top to bottom. */
 export const TIER_IDS = ['S', 'A', 'B', 'F', 'DNF'] as const;
 export type TierId = (typeof TIER_IDS)[number];
-export type TierRowId = TierId | 'shelf';
-export const TIER_ROW_IDS: TierRowId[] = [...TIER_IDS, 'shelf'];
 
 /**
- * A tier-list entry is a denormalized snapshot: identity is the stable
- * ASIN, but title/cover are copied in so the list renders without
- * cross-year data fetches.
+ * Tier rows hold series ASINs only. The unranked "shelf" is derived:
+ * series in the collection (watchedSeries) that appear in no tier.
+ * Names/covers come from the exported series index at render time.
  */
-export interface TierEntry {
-	kind: 'book' | 'series';
-	id: string; // book ASIN or series ASIN
-	title: string;
-	coverUrl: string | null;
-}
-
-export type TierList = Record<TierRowId, TierEntry[]>;
-
-export function tierKey(e: Pick<TierEntry, 'kind' | 'id'>): string {
-	return `${e.kind}:${e.id}`;
-}
+export type TierList = Record<TierId, string[]>;
 
 function emptyTierList(): TierList {
-	return { S: [], A: [], B: [], F: [], DNF: [], shelf: [] };
+	return { S: [], A: [], B: [], F: [], DNF: [] };
+}
+
+function normalizeTierList(raw: unknown): TierList {
+	const out = emptyTierList();
+	if (!raw || typeof raw !== 'object') return out;
+	for (const tier of TIER_IDS) {
+		const row = (raw as Record<string, unknown>)[tier];
+		if (!Array.isArray(row)) continue;
+		out[tier] = row
+			.map((x) =>
+				typeof x === 'string'
+					? x
+					: // Pre-release dev shape stored {kind, id} entry objects.
+						x && typeof x === 'object' && (x as { kind?: string }).kind === 'series'
+						? ((x as { id?: string }).id ?? null)
+						: null
+			)
+			.filter((x): x is string => Boolean(x));
+	}
+	return out;
 }
 
 interface PrefsV1 {
@@ -46,6 +53,7 @@ interface PrefsV1 {
 	hiddenSeries: string[];
 	hiddenAuthors: string[];
 	hiddenBooks: string[];
+	readBooks: string[];
 	sort: SortMode;
 	genres: Subgenre[];
 	seriesOnly: boolean;
@@ -60,6 +68,7 @@ const DEFAULTS: PrefsV1 = {
 	hiddenSeries: [],
 	hiddenAuthors: [],
 	hiddenBooks: [],
+	readBooks: [],
 	sort: 'relevance',
 	genres: [],
 	seriesOnly: false,
@@ -76,8 +85,7 @@ function load(): PrefsV1 {
 		const parsed = JSON.parse(raw) as Partial<PrefsV1>;
 		// Future schema versions migrate here, keyed on parsed.v.
 		const merged = { ...DEFAULTS, ...parsed, v: 1 as const };
-		// Stored tier lists from before a row existed lack that key.
-		merged.tierList = { ...emptyTierList(), ...(parsed.tierList ?? {}) };
+		merged.tierList = normalizeTierList(parsed.tierList);
 		return merged;
 	} catch {
 		return { ...DEFAULTS, tierList: emptyTierList() };
@@ -187,71 +195,76 @@ class Prefs {
 		this.#persist();
 	}
 
-	// ---- Tier list ----
+	// ---- Read tracking ----
+
+	get readBooks(): Set<string> {
+		return new Set(this.#data.readBooks);
+	}
+	isRead(asin: string): boolean {
+		return this.#data.readBooks.includes(asin);
+	}
+	toggleRead(asin: string): void {
+		this.#data.readBooks = toggleIn(this.#data.readBooks, asin);
+		this.#persist();
+	}
+
+	// ---- Tier list (series ASINs only) ----
 
 	get tierList(): TierList {
 		return this.#data.tierList;
 	}
 
-	get tierCount(): number {
-		return TIER_ROW_IDS.reduce((n, row) => n + this.#data.tierList[row].length, 0);
+	get rankedCount(): number {
+		return TIER_IDS.reduce((n, tier) => n + this.#data.tierList[tier].length, 0);
 	}
 
-	/** Which row an entry lives in, or null if it isn't on the tier list. */
-	tierRowOf(kind: TierEntry['kind'], id: string): TierRowId | null {
-		const key = tierKey({ kind, id });
-		for (const row of TIER_ROW_IDS) {
-			if (this.#data.tierList[row].some((e) => tierKey(e) === key)) return row;
+	/** Which tier a series sits in, or null if unranked. */
+	tierOf(seriesAsin: string): TierId | null {
+		for (const tier of TIER_IDS) {
+			if (this.#data.tierList[tier].includes(seriesAsin)) return tier;
 		}
 		return null;
 	}
 
-	/** Add to the shelf (no-op if already anywhere on the list). */
-	addTierEntry(entry: TierEntry): void {
-		if (this.tierRowOf(entry.kind, entry.id)) return;
-		this.#data.tierList.shelf = [...this.#data.tierList.shelf, entry];
-		this.#persist();
-	}
-
-	removeTierEntry(kind: TierEntry['kind'], id: string): void {
-		const key = tierKey({ kind, id });
-		for (const row of TIER_ROW_IDS) {
-			this.#data.tierList[row] = this.#data.tierList[row].filter((e) => tierKey(e) !== key);
-		}
-		this.#persist();
+	/** Every ranked series, across all tiers. */
+	get rankedSeries(): Set<string> {
+		return new Set(TIER_IDS.flatMap((tier) => this.#data.tierList[tier]));
 	}
 
 	/**
-	 * Move an entry to `row`, inserting at `index` (end of row if omitted).
-	 * The index is relative to the target row *after* the entry is pulled out.
+	 * Move a series into `tier` at `index` (end if omitted). The index is
+	 * relative to the row *after* the series is pulled from wherever it was.
 	 */
-	placeTierEntry(kind: TierEntry['kind'], id: string, row: TierRowId, index?: number): void {
-		const key = tierKey({ kind, id });
-		let entry: TierEntry | undefined;
-		for (const r of TIER_ROW_IDS) {
-			entry = entry ?? this.#data.tierList[r].find((e) => tierKey(e) === key);
-			this.#data.tierList[r] = this.#data.tierList[r].filter((e) => tierKey(e) !== key);
+	placeInTier(seriesAsin: string, tier: TierId, index?: number): void {
+		for (const t of TIER_IDS) {
+			this.#data.tierList[t] = this.#data.tierList[t].filter((a) => a !== seriesAsin);
 		}
-		if (!entry) return;
-		const target = [...this.#data.tierList[row]];
-		const at = index === undefined ? target.length : Math.max(0, Math.min(index, target.length));
-		target.splice(at, 0, entry);
-		this.#data.tierList[row] = target;
+		const row = [...this.#data.tierList[tier]];
+		const at = index === undefined ? row.length : Math.max(0, Math.min(index, row.length));
+		row.splice(at, 0, seriesAsin);
+		this.#data.tierList[tier] = row;
 		this.#persist();
 	}
 
-	/** Shift an entry one slot left/right within its current row. */
-	nudgeTierEntry(kind: TierEntry['kind'], id: string, delta: -1 | 1): void {
-		const row = this.tierRowOf(kind, id);
-		if (!row) return;
-		const key = tierKey({ kind, id });
-		const list = [...this.#data.tierList[row]];
-		const from = list.findIndex((e) => tierKey(e) === key);
+	/** Pull a series out of all tiers (back to the derived shelf). */
+	unrank(seriesAsin: string): void {
+		for (const t of TIER_IDS) {
+			this.#data.tierList[t] = this.#data.tierList[t].filter((a) => a !== seriesAsin);
+		}
+		this.#persist();
+	}
+
+	/** Shift a series one slot left/right within its tier. */
+	nudgeInTier(seriesAsin: string, delta: -1 | 1): void {
+		const tier = this.tierOf(seriesAsin);
+		if (!tier) return;
+		const row = [...this.#data.tierList[tier]];
+		const from = row.indexOf(seriesAsin);
 		const to = from + delta;
-		if (from < 0 || to < 0 || to >= list.length) return;
-		const [entry] = list.splice(from, 1);
-		list.splice(to, 0, entry);
-		this.#data.tierList[row] = list;
+		if (from < 0 || to < 0 || to >= row.length) return;
+		row.splice(from, 1);
+		row.splice(to, 0, seriesAsin);
+		this.#data.tierList[tier] = row;
 		this.#persist();
 	}
 }
