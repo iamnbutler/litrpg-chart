@@ -10,6 +10,7 @@
 		onAuthorClick,
 		onNarratorClick,
 		onSeriesClick,
+		onCardClick,
 	}: {
 		filter: ActiveFilter;
 		books: Book[];
@@ -17,7 +18,24 @@
 		onAuthorClick: (name: string) => void;
 		onNarratorClick: (name: string) => void;
 		onSeriesClick: (seriesAsin: string) => void;
+		onCardClick?: (book: Book) => void;
 	} = $props();
+
+	const seriesOnTierList = $derived(
+		filter.type === 'series' && prefs.tierRowOf('series', filter.value) !== null
+	);
+
+	function toggleSeriesTier() {
+		if (filter.type !== 'series') return;
+		if (seriesOnTierList) prefs.removeTierEntry('series', filter.value);
+		else
+			prefs.addTierEntry({
+				kind: 'series',
+				id: filter.value,
+				title: filter.label,
+				coverUrl: books[0]?.coverUrl ?? null
+			});
+	}
 
 	let closing = $state(false);
 
@@ -52,6 +70,9 @@
 				<button class="watch-btn" class:watched onclick={() => prefs.toggleWatchedSeries(filter.value)}>
 					{watched ? '★ Watching' : '☆ Watch'}
 				</button>
+				<button class="watch-btn" class:watched={seriesOnTierList} onclick={toggleSeriesTier}>
+					{seriesOnTierList ? '✓ Tier list' : '+ Tier list'}
+				</button>
 			{/if}
 			<span class="modal-count">{books.length} title{books.length !== 1 ? 's' : ''}</span>
 			<button class="modal-close" onclick={handleClose}>&times;</button>
@@ -63,7 +84,7 @@
 			{:else}
 				<div class="modal-grid">
 					{#each books as book (book.asin)}
-						<BookCard {book} {onAuthorClick} {onNarratorClick} {onSeriesClick} />
+						<BookCard {book} {onAuthorClick} {onNarratorClick} {onSeriesClick} {onCardClick} />
 					{/each}
 				</div>
 			{/if}

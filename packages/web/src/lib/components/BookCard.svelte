@@ -3,12 +3,24 @@
 	import { subgenreLabels, subgenreColors, formatRuntime } from '$lib/types';
 	import { prefs } from '$lib/prefs.svelte';
 
-	let { book, onAuthorClick, onNarratorClick, onSeriesClick }: {
+	let { book, onAuthorClick, onNarratorClick, onSeriesClick, onCardClick }: {
 		book: Book;
 		onAuthorClick?: (name: string) => void;
 		onNarratorClick?: (name: string) => void;
 		onSeriesClick?: (seriesAsin: string) => void;
+		onCardClick?: (book: Book) => void;
 	} = $props();
+
+	// Plain left-clicks open the action sheet; modified clicks and middle
+	// clicks keep native link behavior (new tab etc.).
+	function handleCardClick(e: MouseEvent) {
+		if (!onCardClick) return;
+		if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+		// Author/narrator/series clicks inside the card have their own handlers.
+		if ((e.target as HTMLElement).closest('button, [role="button"]')) return;
+		e.preventDefault();
+		onCardClick(book);
+	}
 
 	const released = $derived(new Date(book.releaseDate) <= new Date());
 	const days = $derived(Math.ceil((new Date(book.releaseDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
@@ -41,6 +53,7 @@
 	href={book.url}
 	target="_blank"
 	rel="noopener noreferrer"
+	onclick={handleCardClick}
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
