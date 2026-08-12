@@ -39,11 +39,11 @@
 		<div class="modal-header">
 			<h2 class="modal-title">
 				{#if filter.type === 'author'}
-					Books by <strong>{filter.value}</strong>
+					Books by <strong>{filter.label}</strong>
 				{:else if filter.type === 'narrator'}
-					Narrated by <strong>{filter.value}</strong>
+					Narrated by <strong>{filter.label}</strong>
 				{:else}
-					<strong>{filter.value}</strong>
+					<strong>{filter.label}</strong>
 				{/if}
 			</h2>
 			<span class="modal-count">{books.length} title{books.length !== 1 ? 's' : ''}</span>

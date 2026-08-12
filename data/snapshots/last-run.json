@@ -1,0 +1,56 @@
+{
+	"startedAt": "2026-08-12T14:30:24.087Z",
+	"command": "run",
+	"throttled": false,
+	"discover": {
+		"queriesRun": 26,
+		"productsSeen": 1258,
+		"newBooks": 1,
+		"refreshedBooks": 960
+	},
+	"closeSeries": {
+		"seriesChecked": 157,
+		"newVolumes": 436,
+		"goneSeries": 0
+	},
+	"hydrate": {
+		"hydrated": 317,
+		"missing": 0
+	},
+	"classify": {
+		"seriesClassified": 270,
+		"seriesWithGenre": 219,
+		"standalonesClassified": 940
+	},
+	"export": {
+		"books": 896,
+		"series": 214,
+		"years": [
+			2017,
+			2018,
+			2019,
+			2020,
+			2021,
+			2022,
+			2023,
+			2024,
+			2025,
+			2026,
+			2027,
+			2200
+		],
+		"dropped": {
+			"unhydrated": 506,
+			"nonEnglish": 0,
+			"aiNarrated": 333,
+			"blockedAuthor": 21,
+			"contentFilter": 8,
+			"noGenre": 415,
+			"excludedSeries": 0
+		}
+	},
+	"finishedAt": "2026-08-12T14:35:20.528Z",
+	"requestsUsed": 500,
+	"books": 2179,
+	"series": 270
+}

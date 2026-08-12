@@ -43,7 +43,7 @@
 >
 	<div class="info">
 		<h3 class="title">{book.title}</h3>
-		<p class="author">{#each book.authors as name, i}{#if i > 0}, {/if}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name); }}>{name}</button>{:else}{name}{/if}{/each} {#if book.narrators.length > 0}<span class="narrator">with {#each book.narrators as name, i}{#if i > 0}, {/if}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name); }}>{name}</button>{:else}{name}{/if}{/each}</span>{/if}</p>
+		<p class="author">{#each book.authors as name, i}{i > 0 ? ', ' : ''}{#if onAuthorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onAuthorClick(name); }}>{name}</button>{:else}{name}{/if}{/each} {#if book.narrators.length > 0}<span class="narrator">with {#each book.narrators as name, i}{i > 0 ? ', ' : ''}{#if onNarratorClick}<button class="link-btn" onclick={(e) => { e.preventDefault(); onNarratorClick(name); }}>{name}</button>{:else}{name}{/if}{/each}</span>{/if}</p>
 
 		<div class="tags">
 			{#each book.subgenres as genre}

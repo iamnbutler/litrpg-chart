@@ -1,0 +1,12 @@
+{
+	"takenAt": "2026-08-12T14:30:24.087Z",
+	"books": 2179,
+	"series": 270,
+	"hydrated": 317,
+	"fieldCoverage": {
+		"title": 1,
+		"releaseDate": 1,
+		"coverUrl": 0.9242902208201893,
+		"rating": 1
+	}
+}
