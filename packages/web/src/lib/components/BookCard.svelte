@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Book } from '$lib/types';
 	import { subgenreLabels, subgenreColors, formatRuntime } from '$lib/types';
+	import { prefs } from '$lib/prefs.svelte';
 
 	let { book, onAuthorClick, onNarratorClick, onSeriesClick }: {
 		book: Book;
@@ -57,7 +58,7 @@
 
 		{#if book.seriesAsin && book.seriesName}
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }}}>{book.seriesName}{#if book.seriesPosition} &ndash; Book {book.seriesPosition}{/if}</span>
+			<span class="series-line" role="button" tabindex="0" onclick={(e) => { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }} onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSeriesClick?.(book.seriesAsin!); }}}>{#if prefs.isWatched(book.seriesAsin)}<span class="watched-star">★</span> {/if}{book.seriesName}{#if book.seriesPosition} &ndash; Book {book.seriesPosition}{/if}</span>
 		{/if}
 		<p class="meta-line">
 			{formatDate(book.releaseDate)}
@@ -219,6 +220,11 @@
 
 	.series-line:hover {
 		text-decoration-color: currentColor;
+	}
+
+	.watched-star {
+		color: var(--accent);
+		margin-right: 0.25em;
 	}
 
 .author {

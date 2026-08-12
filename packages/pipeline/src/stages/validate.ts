@@ -16,11 +16,13 @@ const SnapshotSchema = z.object({
 	series: z.number().int(),
 	hydrated: z.number().int().default(0),
 	/**
-	 * Fraction of HYDRATED books with a non-null value, per key field.
-	 * Unhydrated stubs (fresh close-series volumes) are pending work, not
-	 * regressions — counting them here once discarded a whole bootstrap run.
+	 * ABSOLUTE count of books with a non-null value, per key field.
+	 * Ratios proved composition-sensitive: hydrating the long tail (preorders
+	 * without cover art yet) diluted coverage and false-failed healthy runs.
+	 * Counts only fall when existing values are destroyed — which is the one
+	 * thing merge-only writes should make impossible, so a drop means a bug.
 	 */
-	fieldCoverage: z.record(z.string(), z.number()),
+	fieldCovered: z.record(z.string(), z.number()).default({}),
 });
 export type Snapshot = z.infer<typeof SnapshotSchema>;
 
@@ -29,17 +31,16 @@ const COVERAGE_FIELDS = ["title", "releaseDate", "coverUrl", "rating"] as const;
 export function takeSnapshot(corpus: Corpus, now: string): Snapshot {
 	const books = [...corpus.books.values()];
 	const hydrated = books.filter((b) => b.meta.lastHydratedAt !== null);
-	const fieldCoverage: Record<string, number> = {};
+	const fieldCovered: Record<string, number> = {};
 	for (const field of COVERAGE_FIELDS) {
-		const covered = hydrated.filter((b) => b[field] !== null).length;
-		fieldCoverage[field] = hydrated.length === 0 ? 0 : covered / hydrated.length;
+		fieldCovered[field] = books.filter((b) => b[field] !== null).length;
 	}
 	return {
 		takenAt: now,
 		books: books.length,
 		series: corpus.series.size,
 		hydrated: hydrated.length,
-		fieldCoverage,
+		fieldCovered,
 	};
 }
 
@@ -74,12 +75,12 @@ export function validate(
 				`series shrank ${seriesShrink.toFixed(1)}% (${prev.series} → ${snapshot.series}), max allowed ${config.validate.maxSeriesShrinkPct}%`,
 			);
 		}
-		for (const [field, prevCov] of Object.entries(prev.fieldCoverage)) {
-			const nowCov = snapshot.fieldCoverage[field] ?? 0;
-			const regress = (prevCov - nowCov) * 100;
-			if (regress > config.validate.maxNullRegressPct) {
+		for (const [field, prevCount] of Object.entries(prev.fieldCovered ?? {})) {
+			const nowCount = snapshot.fieldCovered[field] ?? 0;
+			const dropPct = prevCount === 0 ? 0 : ((prevCount - nowCount) / prevCount) * 100;
+			if (dropPct > config.validate.maxNullRegressPct) {
 				problems.push(
-					`${field} coverage regressed ${regress.toFixed(1)}pp (${(prevCov * 100).toFixed(1)}% → ${(nowCov * 100).toFixed(1)}%)`,
+					`books with ${field} dropped ${prevCount} → ${nowCount} (-${dropPct.toFixed(1)}%) — existing values were destroyed`,
 				);
 			}
 		}

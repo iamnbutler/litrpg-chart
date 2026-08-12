@@ -64,10 +64,13 @@
 		const monthIndices = quarterMonthIndices[activeQuarter];
 		const hiddenSeries = prefs.hiddenSeries;
 		const hiddenAuthors = prefs.hiddenAuthors;
+		const watched = prefs.watchedSeries;
+		const mySeriesOnly = prefs.mySeriesOnly;
 		return data.books
 			.filter((b) => {
 				if (!monthIndices.includes(monthOf(b))) return false;
 				if (activeGenres.size > 0 && !b.subgenres.some((g) => activeGenres.has(g))) return false;
+				if (mySeriesOnly && (!b.seriesAsin || !watched.has(b.seriesAsin))) return false;
 				if (seriesOnly && !b.seriesAsin) return false;
 				if (longRunningOnly) {
 					const pos = Number.parseFloat(b.seriesPosition ?? '');
@@ -221,8 +224,11 @@
 				<FilterPopover
 					{seriesOnly}
 					{longRunningOnly}
+					mySeriesOnly={prefs.mySeriesOnly}
+					watchedCount={prefs.watchedSeries.size}
 					onSeriesOnlyChange={(v) => (prefs.seriesOnly = v)}
 					onLongRunningChange={(v) => (prefs.longRunningOnly = v)}
+					onMySeriesChange={(v) => (prefs.mySeriesOnly = v)}
 				/>
 				<div class="sort-toggle">
 					<button

@@ -2,18 +2,24 @@
 	let {
 		seriesOnly,
 		longRunningOnly,
+		mySeriesOnly,
+		watchedCount,
 		onSeriesOnlyChange,
 		onLongRunningChange,
+		onMySeriesChange,
 	}: {
 		seriesOnly: boolean;
 		longRunningOnly: boolean;
+		mySeriesOnly: boolean;
+		watchedCount: number;
 		onSeriesOnlyChange: (v: boolean) => void;
 		onLongRunningChange: (v: boolean) => void;
+		onMySeriesChange: (v: boolean) => void;
 	} = $props();
 
 	let open = $state(false);
 
-	const activeCount = $derived((seriesOnly ? 1 : 0) + (longRunningOnly ? 1 : 0));
+	const activeCount = $derived((seriesOnly ? 1 : 0) + (longRunningOnly ? 1 : 0) + (mySeriesOnly ? 1 : 0));
 </script>
 
 <div class="filter-popover">
@@ -40,6 +46,13 @@
 				<span class="label-text">
 					Long-running series
 					<span class="label-desc">8+ books in the series</span>
+				</span>
+			</label>
+			<label class="filter-option">
+				<input type="checkbox" checked={mySeriesOnly} onchange={() => onMySeriesChange(!mySeriesOnly)} />
+				<span class="label-text">
+					My series
+					<span class="label-desc">{watchedCount === 0 ? 'Watch a series from its page first' : `Only the ${watchedCount} series you watch`}</span>
 				</span>
 			</label>
 		</div>

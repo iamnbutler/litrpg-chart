@@ -46,6 +46,7 @@ export function exportData(
 
 	const dropped: Record<string, number> = {
 		unhydrated: 0,
+		implausibleDate: 0,
 		nonEnglish: 0,
 		aiNarrated: 0,
 		blockedAuthor: 0,
@@ -59,6 +60,12 @@ export function exportData(
 	for (const book of books) {
 		if (!book.title || !book.releaseDate) {
 			dropped.unhydrated++;
+			continue;
+		}
+		// Audible uses far-future placeholder dates (2200-01-01) for some
+		// unscheduled preorders; real preorders never sit more than ~2 years out.
+		if (Number(book.releaseDate.slice(0, 4)) > Number(now.slice(0, 4)) + 2) {
+			dropped.implausibleDate++;
 			continue;
 		}
 		if (book.language !== null && book.language !== "english") {

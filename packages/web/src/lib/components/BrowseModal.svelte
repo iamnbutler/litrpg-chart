@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Book, ActiveFilter } from '$lib/types';
+	import { prefs } from '$lib/prefs.svelte';
 	import BookCard from './BookCard.svelte';
 
 	let {
@@ -46,6 +47,12 @@
 					<strong>{filter.label}</strong>
 				{/if}
 			</h2>
+			{#if filter.type === 'series'}
+				{@const watched = prefs.isWatched(filter.value)}
+				<button class="watch-btn" class:watched onclick={() => prefs.toggleWatchedSeries(filter.value)}>
+					{watched ? '★ Watching' : '☆ Watch'}
+				</button>
+			{/if}
 			<span class="modal-count">{books.length} title{books.length !== 1 ? 's' : ''}</span>
 			<button class="modal-close" onclick={handleClose}>&times;</button>
 		</div>
@@ -161,6 +168,30 @@
 		font-size: 0.7rem;
 		color: var(--text-muted);
 		white-space: nowrap;
+	}
+
+	.watch-btn {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--text-muted);
+		background: transparent;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 0.25rem 0.6rem;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: color 0.15s, border-color 0.15s;
+	}
+
+	.watch-btn:hover {
+		color: var(--text-primary);
+		border-color: var(--text-muted);
+	}
+
+	.watch-btn.watched {
+		color: var(--accent);
+		border-color: var(--accent);
 	}
 
 	.modal-close {
