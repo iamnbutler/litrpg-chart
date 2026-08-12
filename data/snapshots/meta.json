@@ -1,12 +1,12 @@
 {
-	"takenAt": "2026-08-12T14:44:08.969Z",
-	"books": 2504,
-	"series": 332,
-	"hydrated": 711,
+	"takenAt": "2026-08-12T14:49:30.665Z",
+	"books": 2687,
+	"series": 353,
+	"hydrated": 1123,
 	"fieldCovered": {
-		"title": 1851,
-		"releaseDate": 1851,
-		"coverUrl": 1758,
-		"rating": 1740
+		"title": 2172,
+		"releaseDate": 2172,
+		"coverUrl": 2019,
+		"rating": 2069
 	}
 }
