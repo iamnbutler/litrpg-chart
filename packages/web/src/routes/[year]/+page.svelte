@@ -11,8 +11,13 @@
 	import GenreFilter from '$lib/components/GenreFilter.svelte';
 	import FilterPopover from '$lib/components/FilterPopover.svelte';
 	import BrowseModal from '$lib/components/BrowseModal.svelte';
+	import BookActionSheet from '$lib/components/BookActionSheet.svelte';
 
 	let { data } = $props();
+
+	// Left-clicking a card opens the action sheet (open link / tier list / hide).
+	let sheetBook: Book | null = $state(null);
+	const handleCardClick = (book: Book) => (sheetBook = book);
 
 	function currentQuarter(): Quarter {
 		const month = new Date().getMonth();
@@ -64,6 +69,7 @@
 		const monthIndices = quarterMonthIndices[activeQuarter];
 		const hiddenSeries = prefs.hiddenSeries;
 		const hiddenAuthors = prefs.hiddenAuthors;
+		const hiddenBooks = prefs.hiddenBooks;
 		const watched = prefs.watchedSeries;
 		const mySeriesOnly = prefs.mySeriesOnly;
 		return data.books
@@ -77,6 +83,7 @@
 					if (Number.isNaN(pos) || pos < 8) return false;
 				}
 				if (b.seriesAsin && hiddenSeries.has(b.seriesAsin)) return false;
+				if (hiddenBooks.has(b.asin)) return false;
 				if (b.authors.some((a) => hiddenAuthors.has(slugify(a)))) return false;
 				return true;
 			})
@@ -200,6 +207,7 @@
 	<header>
 		<div class="header-inner">
 			<h1 class="title">LitRPG Chart</h1>
+			<a class="tierlist-link" href="{base}/collection" title="My collection">Collection{prefs.watchedSeries.size > 0 ? ` (${prefs.watchedSeries.size})` : ''}</a>
 			<div class="header-nav">
 				<SeasonNav
 					{activeQuarter}
@@ -226,9 +234,11 @@
 					{longRunningOnly}
 					mySeriesOnly={prefs.mySeriesOnly}
 					watchedCount={prefs.watchedSeries.size}
+					hiddenCount={prefs.hiddenCount}
 					onSeriesOnlyChange={(v) => (prefs.seriesOnly = v)}
 					onLongRunningChange={(v) => (prefs.longRunningOnly = v)}
 					onMySeriesChange={(v) => (prefs.mySeriesOnly = v)}
+					onClearHidden={() => prefs.clearHidden()}
 				/>
 				<div class="sort-toggle">
 					<button
@@ -253,7 +263,7 @@
 		{:else if sortMode === 'relevance'}
 			<div class="book-grid">
 				{#each filteredBooks as book (book.asin)}
-					<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} />
+					<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} onCardClick={handleCardClick} />
 				{/each}
 			</div>
 		{:else}
@@ -262,7 +272,7 @@
 					<h2 class="month-heading">{group.month}</h2>
 					<div class="book-grid">
 						{#each group.books as book (book.asin)}
-							<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} />
+							<BookCard {book} onAuthorClick={handleAuthorClick} onNarratorClick={handleNarratorClick} onSeriesClick={handleSeriesClick} onCardClick={handleCardClick} />
 						{/each}
 					</div>
 				</section>
@@ -283,7 +293,12 @@
 			onAuthorClick={handleAuthorClick}
 			onNarratorClick={handleNarratorClick}
 			onSeriesClick={handleSeriesClick}
+			onCardClick={handleCardClick}
 		/>
+	{/if}
+
+	{#if sheetBook}
+		<BookActionSheet book={sheetBook} onClose={() => (sheetBook = null)} />
 	{/if}
 
 	<div class="mobile-bottom-bar">
@@ -328,6 +343,23 @@
 		color: var(--text-primary);
 		letter-spacing: -0.01em;
 		white-space: nowrap;
+	}
+
+	.tierlist-link {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		color: var(--text-muted);
+		text-decoration: none;
+		white-space: nowrap;
+		border: 1px solid var(--border);
+		border-radius: 6px;
+		padding: 0.25rem 0.6rem;
+		transition: color 0.15s, border-color 0.15s;
+	}
+
+	.tierlist-link:hover {
+		color: var(--accent);
+		border-color: var(--accent);
 	}
 
 	main {

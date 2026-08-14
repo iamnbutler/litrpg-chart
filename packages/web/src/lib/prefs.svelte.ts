@@ -12,16 +12,54 @@ import type { SortMode } from './types';
 
 const STORAGE_KEY = 'litrpg-chart:prefs';
 
+/** Ranked rows of the tier list, top to bottom. */
+export const TIER_IDS = ['S', 'A', 'B', 'F', 'DNF'] as const;
+export type TierId = (typeof TIER_IDS)[number];
+
+/**
+ * Tier rows hold series ASINs only. The unranked "shelf" is derived:
+ * series in the collection (watchedSeries) that appear in no tier.
+ * Names/covers come from the exported series index at render time.
+ */
+export type TierList = Record<TierId, string[]>;
+
+function emptyTierList(): TierList {
+	return { S: [], A: [], B: [], F: [], DNF: [] };
+}
+
+function normalizeTierList(raw: unknown): TierList {
+	const out = emptyTierList();
+	if (!raw || typeof raw !== 'object') return out;
+	for (const tier of TIER_IDS) {
+		const row = (raw as Record<string, unknown>)[tier];
+		if (!Array.isArray(row)) continue;
+		out[tier] = row
+			.map((x) =>
+				typeof x === 'string'
+					? x
+					: // Pre-release dev shape stored {kind, id} entry objects.
+						x && typeof x === 'object' && (x as { kind?: string }).kind === 'series'
+						? ((x as { id?: string }).id ?? null)
+						: null
+			)
+			.filter((x): x is string => Boolean(x));
+	}
+	return out;
+}
+
 interface PrefsV1 {
 	v: 1;
 	watchedSeries: string[];
 	hiddenSeries: string[];
 	hiddenAuthors: string[];
+	hiddenBooks: string[];
+	readBooks: string[];
 	sort: SortMode;
 	genres: Subgenre[];
 	seriesOnly: boolean;
 	longRunningOnly: boolean;
 	mySeriesOnly: boolean;
+	tierList: TierList;
 }
 
 const DEFAULTS: PrefsV1 = {
@@ -29,23 +67,28 @@ const DEFAULTS: PrefsV1 = {
 	watchedSeries: [],
 	hiddenSeries: [],
 	hiddenAuthors: [],
+	hiddenBooks: [],
+	readBooks: [],
 	sort: 'relevance',
 	genres: [],
 	seriesOnly: false,
 	longRunningOnly: false,
-	mySeriesOnly: false
+	mySeriesOnly: false,
+	tierList: emptyTierList()
 };
 
 function load(): PrefsV1 {
-	if (!browser) return { ...DEFAULTS };
+	if (!browser) return { ...DEFAULTS, tierList: emptyTierList() };
 	try {
 		const raw = localStorage.getItem(STORAGE_KEY);
-		if (!raw) return { ...DEFAULTS };
+		if (!raw) return { ...DEFAULTS, tierList: emptyTierList() };
 		const parsed = JSON.parse(raw) as Partial<PrefsV1>;
 		// Future schema versions migrate here, keyed on parsed.v.
-		return { ...DEFAULTS, ...parsed, v: 1 };
+		const merged = { ...DEFAULTS, ...parsed, v: 1 as const };
+		merged.tierList = normalizeTierList(parsed.tierList);
+		return merged;
 	} catch {
-		return { ...DEFAULTS };
+		return { ...DEFAULTS, tierList: emptyTierList() };
 	}
 }
 
@@ -127,6 +170,101 @@ class Prefs {
 	}
 	toggleHiddenAuthor(slug: string): void {
 		this.#data.hiddenAuthors = toggleIn(this.#data.hiddenAuthors, slug);
+		this.#persist();
+	}
+
+	get hiddenBooks(): Set<string> {
+		return new Set(this.#data.hiddenBooks);
+	}
+	toggleHiddenBook(asin: string): void {
+		this.#data.hiddenBooks = toggleIn(this.#data.hiddenBooks, asin);
+		this.#persist();
+	}
+
+	get hiddenCount(): number {
+		return (
+			this.#data.hiddenSeries.length +
+			this.#data.hiddenBooks.length +
+			this.#data.hiddenAuthors.length
+		);
+	}
+	clearHidden(): void {
+		this.#data.hiddenSeries = [];
+		this.#data.hiddenBooks = [];
+		this.#data.hiddenAuthors = [];
+		this.#persist();
+	}
+
+	// ---- Read tracking ----
+
+	get readBooks(): Set<string> {
+		return new Set(this.#data.readBooks);
+	}
+	isRead(asin: string): boolean {
+		return this.#data.readBooks.includes(asin);
+	}
+	toggleRead(asin: string): void {
+		this.#data.readBooks = toggleIn(this.#data.readBooks, asin);
+		this.#persist();
+	}
+
+	// ---- Tier list (series ASINs only) ----
+
+	get tierList(): TierList {
+		return this.#data.tierList;
+	}
+
+	get rankedCount(): number {
+		return TIER_IDS.reduce((n, tier) => n + this.#data.tierList[tier].length, 0);
+	}
+
+	/** Which tier a series sits in, or null if unranked. */
+	tierOf(seriesAsin: string): TierId | null {
+		for (const tier of TIER_IDS) {
+			if (this.#data.tierList[tier].includes(seriesAsin)) return tier;
+		}
+		return null;
+	}
+
+	/** Every ranked series, across all tiers. */
+	get rankedSeries(): Set<string> {
+		return new Set(TIER_IDS.flatMap((tier) => this.#data.tierList[tier]));
+	}
+
+	/**
+	 * Move a series into `tier` at `index` (end if omitted). The index is
+	 * relative to the row *after* the series is pulled from wherever it was.
+	 */
+	placeInTier(seriesAsin: string, tier: TierId, index?: number): void {
+		for (const t of TIER_IDS) {
+			this.#data.tierList[t] = this.#data.tierList[t].filter((a) => a !== seriesAsin);
+		}
+		const row = [...this.#data.tierList[tier]];
+		const at = index === undefined ? row.length : Math.max(0, Math.min(index, row.length));
+		row.splice(at, 0, seriesAsin);
+		this.#data.tierList[tier] = row;
+		this.#persist();
+	}
+
+	/** Pull a series out of all tiers (back to the derived shelf). */
+	unrank(seriesAsin: string): void {
+		for (const t of TIER_IDS) {
+			this.#data.tierList[t] = this.#data.tierList[t].filter((a) => a !== seriesAsin);
+		}
+		this.#persist();
+	}
+
+	/** Shift a series one slot left/right within its tier. */
+	nudgeInTier(seriesAsin: string, delta: -1 | 1): void {
+		const tier = this.tierOf(seriesAsin);
+		if (!tier) return;
+		const row = [...this.#data.tierList[tier]];
+		const from = row.indexOf(seriesAsin);
+		const to = from + delta;
+		if (from < 0 || to < 0 || to >= row.length) return;
+		row.splice(from, 1);
+		row.splice(to, 0, seriesAsin);
+		this.#data.tierList[tier] = row;
 		this.#persist();
 	}
 }

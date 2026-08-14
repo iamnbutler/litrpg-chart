@@ -10,6 +10,7 @@
 		onAuthorClick,
 		onNarratorClick,
 		onSeriesClick,
+		onCardClick,
 	}: {
 		filter: ActiveFilter;
 		books: Book[];
@@ -17,7 +18,9 @@
 		onAuthorClick: (name: string) => void;
 		onNarratorClick: (name: string) => void;
 		onSeriesClick: (seriesAsin: string) => void;
+		onCardClick?: (book: Book) => void;
 	} = $props();
+
 
 	let closing = $state(false);
 
@@ -50,7 +53,7 @@
 			{#if filter.type === 'series'}
 				{@const watched = prefs.isWatched(filter.value)}
 				<button class="watch-btn" class:watched onclick={() => prefs.toggleWatchedSeries(filter.value)}>
-					{watched ? '★ Watching' : '☆ Watch'}
+					{watched ? '★ In collection' : '+ Collection'}
 				</button>
 			{/if}
 			<span class="modal-count">{books.length} title{books.length !== 1 ? 's' : ''}</span>
@@ -63,7 +66,7 @@
 			{:else}
 				<div class="modal-grid">
 					{#each books as book (book.asin)}
-						<BookCard {book} {onAuthorClick} {onNarratorClick} {onSeriesClick} />
+						<BookCard {book} {onAuthorClick} {onNarratorClick} {onSeriesClick} {onCardClick} />
 					{/each}
 				</div>
 			{/if}

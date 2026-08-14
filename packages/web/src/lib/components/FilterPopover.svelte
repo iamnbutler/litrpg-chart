@@ -4,17 +4,21 @@
 		longRunningOnly,
 		mySeriesOnly,
 		watchedCount,
+		hiddenCount,
 		onSeriesOnlyChange,
 		onLongRunningChange,
 		onMySeriesChange,
+		onClearHidden,
 	}: {
 		seriesOnly: boolean;
 		longRunningOnly: boolean;
 		mySeriesOnly: boolean;
 		watchedCount: number;
+		hiddenCount: number;
 		onSeriesOnlyChange: (v: boolean) => void;
 		onLongRunningChange: (v: boolean) => void;
 		onMySeriesChange: (v: boolean) => void;
+		onClearHidden: () => void;
 	} = $props();
 
 	let open = $state(false);
@@ -52,9 +56,14 @@
 				<input type="checkbox" checked={mySeriesOnly} onchange={() => onMySeriesChange(!mySeriesOnly)} />
 				<span class="label-text">
 					My series
-					<span class="label-desc">{watchedCount === 0 ? 'Watch a series from its page first' : `Only the ${watchedCount} series you watch`}</span>
+					<span class="label-desc">{watchedCount === 0 ? 'Add a series to your collection first' : `Only the ${watchedCount} series in your collection`}</span>
 				</span>
 			</label>
+			{#if hiddenCount > 0}
+				<button class="clear-hidden" onclick={onClearHidden}>
+					Unhide {hiddenCount} hidden item{hiddenCount !== 1 ? 's' : ''}
+				</button>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -158,5 +167,24 @@
 		font-family: var(--font-mono);
 		font-size: 0.65rem;
 		color: var(--text-muted);
+	}
+
+	.clear-hidden {
+		margin-top: 0.25rem;
+		padding: 0.4rem 0.5rem;
+		border: none;
+		border-top: 1px solid var(--border);
+		border-radius: 0 0 6px 6px;
+		background: transparent;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		color: var(--text-muted);
+		cursor: pointer;
+		text-align: left;
+		transition: color 0.1s;
+	}
+
+	.clear-hidden:hover {
+		color: var(--accent);
 	}
 </style>
