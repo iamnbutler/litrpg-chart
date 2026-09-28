@@ -1,30 +1,30 @@
 {
-	"startedAt": "2026-09-21T19:53:37.400Z",
+	"startedAt": "2026-09-28T21:06:52.809Z",
 	"command": "run",
 	"throttled": false,
 	"discover": {
 		"queriesRun": 26,
 		"productsSeen": 1259,
-		"newBooks": 55,
-		"refreshedBooks": 891
+		"newBooks": 89,
+		"refreshedBooks": 858
 	},
 	"closeSeries": {
-		"seriesChecked": 526,
-		"newVolumes": 53,
+		"seriesChecked": 534,
+		"newVolumes": 22,
 		"goneSeries": 0
 	},
 	"hydrate": {
-		"hydrated": 48,
+		"hydrated": 40,
 		"missing": 0
 	},
 	"classify": {
-		"seriesClassified": 610,
-		"seriesWithGenre": 550,
-		"standalonesClassified": 709
+		"seriesClassified": 617,
+		"seriesWithGenre": 555,
+		"standalonesClassified": 787
 	},
 	"export": {
-		"books": 2414,
-		"series": 525,
+		"books": 2488,
+		"series": 530,
 		"years": [
 			2014,
 			2015,
@@ -42,18 +42,18 @@
 			2027
 		],
 		"dropped": {
-			"unhydrated": 144,
-			"implausibleDate": 380,
+			"unhydrated": 127,
+			"implausibleDate": 389,
 			"nonEnglish": 4,
-			"aiNarrated": 525,
-			"blockedAuthor": 82,
-			"contentFilter": 33,
-			"noGenre": 258,
+			"aiNarrated": 540,
+			"blockedAuthor": 95,
+			"contentFilter": 35,
+			"noGenre": 273,
 			"excludedSeries": 0
 		}
 	},
-	"finishedAt": "2026-09-21T19:59:37.959Z",
+	"finishedAt": "2026-09-28T21:12:36.857Z",
 	"requestsUsed": 600,
-	"books": 3840,
-	"series": 610
+	"books": 3951,
+	"series": 617
 }
